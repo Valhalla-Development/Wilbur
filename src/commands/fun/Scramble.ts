@@ -163,9 +163,10 @@ export class Scramble {
                         .setDisabled(true),
                 );
 
-                await (interaction as unknown as ButtonInteraction).update({ embeds: [successEmbed], components: [row] });
+                if (!interaction.isFromMessage()) return;
+                await interaction.update({ embeds: [successEmbed], components: [row] });
             } else {
-                await (interaction as unknown as ButtonInteraction).reply({ content: `${interaction.member} incorrectly guessed **${modalField}**` });
+                await interaction.reply({ content: `${interaction.member} incorrectly guessed **${modalField}**` });
             }
         } else {
             await interaction.reply({ content: 'This game has already ended. Better luck next time!', ephemeral: true });
