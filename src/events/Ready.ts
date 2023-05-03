@@ -82,7 +82,7 @@ export class Ready {
 
         // Set activity
         client.user?.setActivity(
-            `/help | ${client.guilds.cache.size.toLocaleString('en')} Guilds ${client.guilds.cache.reduce((a, b) => a + b.memberCount, 0).toLocaleString('en')} Users`,
+            `${client.guilds.cache.reduce((a, b) => a + b.memberCount, 0).toLocaleString('en')} sharks`,
             {
                 type: ActivityType.Watching,
             },
