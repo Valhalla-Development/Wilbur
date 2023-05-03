@@ -19,7 +19,7 @@ import {
 } from '../../utils/Util.js';
 
 @Discord()
-@Category('Informative')
+@Category('Fun')
 /**
  * A class that provides the logic and interactions for the Scramble word game in Discord.
  */
