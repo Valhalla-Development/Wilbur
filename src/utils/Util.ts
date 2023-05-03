@@ -117,7 +117,7 @@ export async function fetchAndScrambleWord(difficulty: 'easy' | 'medium' | 'hard
     };
 
     const { minCorpusCount, maxCorpusCount } = difficultyLevels[difficulty] || difficultyLevels.easy;
-    const apiKey = 'c23b746d074135dc9500c0a61300a3cb7647e53ec2b9b658e';
+    const apiKey = `${process.env.WordNikApi}`;
     const apiUrl = `https://api.wordnik.com/v4/words.json/randomWord?minCorpusCount=${minCorpusCount}&maxCorpusCount=${maxCorpusCount}&hasDictionaryDef=true&includeRelated=true&api_key=${apiKey}`;
 
     try {
