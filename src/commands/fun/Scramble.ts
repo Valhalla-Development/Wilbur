@@ -106,8 +106,8 @@ export class Scramble {
             .setCustomId('modalField')
             .setLabel('Input')
             .setStyle(TextInputStyle.Paragraph)
-            .setMinLength(this.originalWord.length)
-            .setMaxLength(this.originalWord.length);
+            .setMinLength(this.originalWord.length ? this.originalWord.length : 0)
+            .setMaxLength(this.originalWord.length ? this.originalWord.length : 20);
 
         const inputRow = new ActionRowBuilder<TextInputBuilder>().addComponents(input);
         modal.addComponents(inputRow);
