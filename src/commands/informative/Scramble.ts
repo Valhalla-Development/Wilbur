@@ -106,6 +106,7 @@ export class Scramble {
             .setCustomId('modalField')
             .setLabel('Input')
             .setStyle(TextInputStyle.Paragraph)
+            .setMinLength(this.originalWord.length)
             .setMaxLength(this.originalWord.length);
 
         const inputRow = new ActionRowBuilder<TextInputBuilder>().addComponents(input);
