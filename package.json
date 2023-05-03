@@ -17,6 +17,7 @@
   "dependencies": {
     "@discordx/importer": "^1.2.2",
     "@discordx/utilities": "^5.2.1",
+    "@types/uuid": "^9.0.1",
     "axios": "^1.4.0",
     "colors": "^1.4.0",
     "discord-hybrid-sharding": "^2.1.2",
@@ -24,7 +25,8 @@
     "discordx": "^11.7.6",
     "dotenv": "^16.0.3",
     "moment": "^2.29.4",
-    "systeminformation": "^5.17.12"
+    "systeminformation": "^5.17.12",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/node": "^18.16.3",

@@ -29,6 +29,7 @@ module.exports = {
         'consistent-return': 'off',
         'import/no-unresolved': 'off',
         'no-nested-ternary': 'off',
-        'no-unused-expressions': 'off'
+        'no-unused-expressions': 'off',
+        'max-classes-per-file': 'off'
     },
 };
