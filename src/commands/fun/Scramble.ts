@@ -41,7 +41,13 @@ const activeGames: Record<string, Game> = {};
 
 @Discord()
 @Category('Fun')
+
 export class Scramble {
+    /**
+     * Creates an EmbedBuilder object for displaying the scrambled word to users.
+     * @param game - The current game being played.
+     * @returns An EmbedBuilder object.
+     */
     private createScrambleEmbed(game: Game): EmbedBuilder {
         return new EmbedBuilder()
             .setTitle('Scramble Word')
@@ -49,6 +55,11 @@ export class Scramble {
             .setColor('#ffffff');
     }
 
+    /**
+     * Creates an ActionRowBuilder object containing a button for users to submit their guesses.
+     * @param gameId - The unique id of the current game.
+     * @returns An ActionRowBuilder object.
+     */
     private createAnswerButton(gameId: string): ActionRowBuilder<ButtonBuilder> {
         return new ActionRowBuilder<ButtonBuilder>().addComponents(
             new ButtonBuilder()
@@ -58,6 +69,10 @@ export class Scramble {
         );
     }
 
+    /**
+     * Plays a game of word scrambling.
+     * @param interaction - The CommandInteraction object that represents the user's interaction with the bot.
+     */
     @Slash({ description: 'Play a scramble word game' })
     async scramble(interaction: CommandInteraction) {
         if (!interaction.channel) return;
@@ -115,6 +130,10 @@ export class Scramble {
         }
     }
 
+    /**
+     * Handles button click events from the "Answer" button.
+     * @param interaction - The ButtonInteraction object that represents the user's interaction with the button.
+     */
     @ButtonComponent({ id: /^scramble_guess-/ })
     async buttonClicked(interaction: ButtonInteraction) {
         const gameId = interaction.customId.match(/scramble_(?:guess|modal)-([a-f0-9-]+)/i)?.[1]; // Extract the gameId from the custom id
@@ -132,6 +151,10 @@ export class Scramble {
         await interaction.showModal(modal);
     }
 
+    /**
+     * Handles modal submit events for the "Answer" button.
+     * @param interaction - The ModalSubmitInteraction object that represents the user's interaction with the modal.
+     */
     @ModalComponent({ id: /^scramble_modal-/ })
     async handleModalSubmit(interaction: ModalSubmitInteraction): Promise<void> {
         const gameId = interaction.customId.match(/scramble_(?:guess|modal)-([a-f0-9-]+)/i)?.[1]; // Extract the gameId from the custom id
