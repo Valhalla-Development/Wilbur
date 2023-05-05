@@ -42,7 +42,7 @@ export class Hangman {
         };
 
         async function updateGameImage(channel: ThreadChannel, messageToUpdate?: Message) {
-            const response = await axios.get('http://localhost:3000/api/hangman', {
+            const response = await axios.get('https://api.ragnarokbot.com/api/hangman', {
                 params: {
                     word: gameState.word,
                     guessed: gameState.guessed,
