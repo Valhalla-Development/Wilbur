@@ -158,7 +158,7 @@ export async function fetchAndScrambleWord(difficulty: 'easy' | 'medium' | 'hard
 }
 
 export async function getRandomWord(): Promise<string | null> {
-    const url = 'https://wilbur-words-api.vercel.app/api/word';
+    const url = 'https://api.ragnarokbot.com/api/word';
 
     try {
         const response = await axios.get(url);
