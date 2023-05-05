@@ -16,7 +16,7 @@ export const client = new Client({
     shards: getInfo().SHARD_LIST,
     shardCount: getInfo().TOTAL_SHARDS,
     intents: [
-        IntentsBitField.Flags.Guilds,
+        IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMessages, IntentsBitField.Flags.MessageContent,
     ],
     silent: true,
 }) as CustomClient;
