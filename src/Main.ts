@@ -1,6 +1,6 @@
 import { dirname, importx } from '@discordx/importer';
 import {
-    ChannelType, codeBlock, EmbedBuilder, IntentsBitField, Partials,
+    ChannelType, codeBlock, EmbedBuilder, IntentsBitField,
 } from 'discord.js';
 import { Client } from 'discordx';
 import 'dotenv/config';
@@ -63,9 +63,9 @@ process.on('unhandledRejection', (error: Error) => {
  * @throws An Error if any required environment variables are missing or invalid.
  */
 async function run() {
-    const missingTokenError = 'You must pass the token for the client.';
-    const invalidLoggingValueError = 'The \'logging\' value must be true or false.';
-    const invalidLoggingChannel = 'You must pass a logging channel if logging is set to true.';
+    const missingTokenError = 'Hey mate, you gotta hand over the token to the client, otherwise, we can\'t proceed!';
+    const invalidLoggingValueError = 'Either set the \'logging\' value to true or false, mate.';
+    const invalidLoggingChannel = 'Oi, if you\'re setting logging to true, make sure to pass a logging channel along with it, mate!';
 
     if (process.env.Logging !== 'true' && process.env.Logging !== 'false') throw new Error(invalidLoggingValueError);
     if (process.env.Logging === 'true' && !process.env.LoggingChannel) throw new Error(invalidLoggingChannel);

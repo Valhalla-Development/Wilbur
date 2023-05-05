@@ -13,5 +13,5 @@ const manager = new ClusterManager(`${dir}/Main.js`, {
     token: config.TOKEN,
 });
 
-manager.on('clusterCreate', (cluster) => console.log(`Launched Cluster ${cluster.id}`));
+manager.on('clusterCreate', (cluster) => console.log(`Cluster ${cluster.id} is off to the races, mate! Let's gooo!`));
 await manager.spawn({ timeout: -1 });

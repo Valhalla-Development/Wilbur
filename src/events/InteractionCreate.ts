@@ -34,7 +34,7 @@ export class InteractionCreate {
             // Add fields to the log embed with information about the executed command
             logEmbed.addFields({
                 name: `Guild: ${interaction.guild.name} | Date: <t:${nowInSecond}>`,
-                value: codeBlock('kotlin', `'${interaction.toString()}' Command was executed by ${interaction.user.tag}`),
+                value: codeBlock('kotlin', `${interaction.user.tag} just executed the '${interaction.toString()}' command`),
             });
             // Log the command execution in the console
             const LoggingNoArgs = `[\x1b[31m${moment().format(

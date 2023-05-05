@@ -51,7 +51,7 @@ export class Scramble {
     private createScrambleEmbed(game: Game): EmbedBuilder {
         return new EmbedBuilder()
             .setTitle('Scramble Word')
-            .setDescription(`The scrambled word is: **${game.scrambledWord.toLowerCase()}**`)
+            .setDescription(`The scrambled word is: ${game.scrambledWord.toLowerCase()}. Can you unscramble it?`)
             .setColor('#ffffff');
     }
 
@@ -108,7 +108,7 @@ export class Scramble {
                             url: `https://wordnik.com/words/${game.originalWord}`,
                             iconURL: `${interaction.guild?.iconURL({ extension: 'png' })}`,
                         })
-                        .setDescription(`No one guessed the scrambled word **(${game.scrambledWord.toLowerCase()})**\n\n>>> **${capitalise(`${game.originalWord}`)}**${game.partOfSpeech ? `\n*${game.partOfSpeech}*` : ''}`);
+                        .setDescription(`Blimey, no one managed to guess the scrambled word (${game.scrambledWord.toLowerCase()}). Here's the answer: \\n\\n>>> ${capitalise(`${game.originalWord}`)}${game.partOfSpeech ? `\n*${game.partOfSpeech}*` : ''}. Better luck next time, mates!`);
 
                     if (game.fieldArray.length) timeOut.addFields(...game.fieldArray);
 
@@ -126,7 +126,7 @@ export class Scramble {
             }, 10 * 60 * 1000); // 10 minutes
         } catch (error) {
             console.error(error);
-            await interaction.channel.send('Error fetching word. Please try again later.');
+            await interaction.channel.send('Sorry mate, we\'re having trouble fetching the word right now. Could you please try again later?');
         }
     }
 
@@ -174,7 +174,7 @@ export class Scramble {
                         url: `https://wordnik.com/words/${game.originalWord}`,
                         iconURL: `${interaction.guild?.iconURL({ extension: 'png' })}`,
                     })
-                    .setDescription(`Congratulations, ${interaction.member} you guessed the scrambled word **(${game.scrambledWord.toLowerCase()})**\n\n>>> **${capitalise(`${game.originalWord}`)}**${game.partOfSpeech ? `\n*${game.partOfSpeech}*` : ''}`);
+                    .setDescription(`Well done, ${interaction.member} you managed to guess the scrambled word **(${game.scrambledWord.toLowerCase()})**\n\n>>> **${capitalise(`${game.originalWord}`)}**${game.partOfSpeech ? `\n*${game.partOfSpeech}*` : ''}`);
 
                 if (game.fieldArray.length) successEmbed.addFields(...game.fieldArray);
 
