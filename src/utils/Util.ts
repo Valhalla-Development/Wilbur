@@ -1,4 +1,5 @@
-import type { ColorResolvable } from 'discord.js';
+import type { ColorResolvable, Message } from 'discord.js';
+import { PermissionsBitField } from 'discord.js';
 import 'colors';
 import axios from 'axios';
 
@@ -69,6 +70,7 @@ async function fetchDefinition(word: string, apiKey: string): Promise<{ definiti
 
     try {
         const definitionResponse = await axios.get(definitionUrl);
+
         const definition = definitionResponse.data[0]?.text || '';
         const partOfSpeech = definitionResponse.data[0]?.partOfSpeech || '';
 
@@ -132,7 +134,7 @@ export async function fetchAndScrambleWord(difficulty: 'easy' | 'medium' | 'hard
             const pronunciationResponse = await axios.get(pronunciationUrl);
             pronunciation = pronunciationResponse.data[0]?.raw || '';
         } catch (error) {
-            console.error('Error fetching pronunciation:', error);
+            console.error('Blimey! There\'s been an error trying to fetch the pronunciation, mate:', error);
         }
 
         const { definition, partOfSpeech } = await fetchDefinition(word, apiKey);
@@ -150,7 +152,73 @@ export async function fetchAndScrambleWord(difficulty: 'easy' | 'medium' | 'hard
             fieldArray,
         };
     } catch (error) {
-        console.error('Error fetching word:', error);
+        console.error('Oopsie daisy! Looks like there\'s been an error trying to fetch the word, mate:', error);
         throw error;
     }
+}
+
+export async function getRandomWord(): Promise<string | null> {
+    const url = 'https://wilbur-words-api.vercel.app/api/word';
+
+    try {
+        const response = await axios.get(url);
+
+        if (response.status === 200) {
+            const { word } = response.data;
+            return word;
+        }
+        console.log(`Error: ${response.status}`);
+        return null;
+    } catch (error) {
+        console.log(`Error: ${error}`);
+        return null;
+    }
+}
+
+/**
+ * Deletes a message after a specified amount of time if the bot has the `Manage Messages` permission.
+ * @param message The message to delete.
+ * @param time The amount of time in milliseconds to wait before deleting the message.
+ * @returns A Promise that resolves when the message is deleted, or rejects if the message could not be deleted.
+ * @throws TypeError if the `message` parameter is not a valid Message object.
+ */
+export async function messageDelete(message: Message, time: number): Promise<void> { // todo test
+    try {
+        // Check if the bot has the Manage Messages permission
+        const botMember = message.guild?.members.cache.get(message.client.user.id);
+        if (botMember?.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
+            // Create a Promise object that resolves after the specified amount of time
+            const promise = new Promise<void>((resolve) => {
+                setTimeout(() => {
+                    resolve();
+                }, time);
+            });
+
+            // Wait for the Promise to resolve before continuing
+            await promise;
+
+            // Check if the message is deletable before attempting to delete it
+            if (message.deletable) {
+                await message.delete();
+            }
+        }
+    } catch (error) {
+        // Handle any errors that occur during message deletion
+        console.error(`Uh-oh, there's been an error trying to delete the message, mate. Here's the message: ${error}`);
+        throw error;
+    }
+}
+
+/**
+ * Checks if a message is deletable, and deletes it after a specified amount of time.
+ * @param message - The message to check.
+ * @param time - The amount of time to wait before deleting the message, in milliseconds.
+ * @returns void
+ */
+export function deletableCheck(message: Message, time: number): void {
+    setTimeout(() => {
+        if (message && message.deletable) {
+            message.delete().catch(console.error);
+        }
+    }, time);
 }
