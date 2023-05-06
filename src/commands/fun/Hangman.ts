@@ -10,7 +10,7 @@ import {
 } from '../../utils/Util.js';
 
 const cooldown = new Map();
-const cooldownSeconds = 2;
+const cooldownSeconds = 1;
 
 @Discord()
 @Category('Fun')
@@ -19,13 +19,10 @@ export class Hangman {
     async hangman(interaction: CommandInteraction) {
         if (!interaction.channel || interaction.channel.type !== ChannelType.GuildText) return;
 
-        if (!interaction.guild?.members.me?.permissions.has(PermissionsBitField.Flags.CreatePublicThreads)) { // todo test this check
+        if (!interaction.guild?.members.me?.permissions.has(PermissionsBitField.Flags.CreatePublicThreads)) {
             await interaction.reply('Ahoy there, mate! It seems like I don\'t have the Create Public Threads permission. This permission is required for me to execute this command.');
             return;
         }
-
-        await interaction.deferReply();
-        await interaction.deleteReply();
 
         const word = await getRandomWord();
 
@@ -33,6 +30,9 @@ export class Hangman {
             await interaction.reply('Oopsie daisy, mate! An unknown error occurred. Could you please try again later?');
             return;
         }
+
+        await interaction.deferReply();
+        await interaction.deleteReply();
 
         const gameState = {
             word: word.toLowerCase(),
@@ -42,7 +42,7 @@ export class Hangman {
         };
 
         async function updateGameImage(channel: ThreadChannel, messageToUpdate?: Message) {
-            const response = await axios.get('https://api.ragnarokbot.com/api/hangman', {
+            const response = await axios.get('https://api.ragnarokbot.com/v1/hangman', {
                 params: {
                     word: gameState.word,
                     guessed: gameState.guessed,
@@ -84,8 +84,8 @@ export class Hangman {
             const remainingCooldown = cooldown.get(interaction.user.id) - Date.now();
             if (remainingCooldown > 0) {
                 const remainingSeconds = Math.ceil(remainingCooldown / 1000);
-                m.reply({ content: `Whoa there, mate! Slow down a bit! You need to wait another ${remainingSeconds} seconds before trying again.` }).then((ms) => deletableCheck(ms, 4000));
-                await messageDelete(m, 4000);
+                m.reply({ content: `Whoa there, mate! Slow down a bit! You need to wait another ${remainingSeconds} seconds before trying again.` }).then((ms) => deletableCheck(ms, 2500));
+                await messageDelete(m, 2500);
                 return;
             }
 
@@ -103,13 +103,15 @@ export class Hangman {
                         gameState.showWord = true;
                         await updateGameImage(thread, gameMessage);
                         thread.send({ content: `Fantastic work, ${interaction.member}! You've correctly guessed the word! 🎉. You're a natural at this, mate!` });
-                        await thread.setLocked(true);
                         collector.stop();
                         return;
                     }
+                    // entered full word, wrong answer
+                    await m.reply({ content: 'Sorry, mate! You guessed the wrong word!' }).then((ms) => deletableCheck(ms, 2500));
+                    await messageDelete(m, 2500);
                 } else {
-                    await m.reply({ content: 'Oi, mate! Please only enter **1** character at a time. Can\'t have you giving away all the answers now, can we?' }).then((ms) => deletableCheck(ms, 5000));
-                    await messageDelete(m, 5000);
+                    await m.reply({ content: 'Oi, mate! Please only enter **1** character at a time. Can\'t have you giving away all the answers now, can we?' }).then((ms) => deletableCheck(ms, 2500));
+                    await messageDelete(m, 2500);
                     return;
                 }
             }
@@ -125,6 +127,7 @@ export class Hangman {
                             // Game has ended
                             gameState.showWord = true;
                             thread.send({ content: `Uh-oh, ${interaction.member}! Looks like you've run out of attempts ☹️. Better luck next time, mate!` });
+                            await messageDelete(m, 0);
                             await thread.setLocked(true);
                             collector.stop();
                         }
@@ -132,6 +135,7 @@ export class Hangman {
 
                     gameState.guessed += letter;
                     await updateGameImage(thread, gameMessage);
+                    await messageDelete(m, 0);
 
                     // Check if the word has been fully guessed
                     const remainingLetters = gameState.word.split('').filter((char) => !gameState.guessed.includes(char));
@@ -140,23 +144,22 @@ export class Hangman {
                         gameState.showWord = true;
                         await updateGameImage(thread, gameMessage);
                         thread.send({ content: `Fantastic work, ${interaction.member}! You've correctly guessed the word! 🎉. You're a natural at this, mate!` });
-                        await thread.setLocked(true);
                         collector.stop();
                     }
                 } else {
-                    await m.reply({ content: `Oopsie daisy, ${interaction.member}! It looks like you've already guessed that letter. Please try another one!` }).then((ms) => deletableCheck(ms, 4000));
-                    await messageDelete(m, 4000);
+                    await m.reply({ content: `Oopsie daisy, ${interaction.member}! It looks like you've already guessed that letter. Please try another one!` }).then((ms) => deletableCheck(ms, 2500));
+                    await messageDelete(m, 2500);
                 }
             }
         });
 
-        collector.on('end', async () => {
-            gameState.showWord = true;
-            await updateGameImage(thread, gameMessage);
-            thread.send({ content: `Time's up, ${interaction.member}! Unfortunately, you couldn't guess the word in time. Better luck next time, mate!` });
-            await thread.setLocked(true);
-            collector.stop();
-            await thread.setLocked(true);
+        collector.on('end', async (_, reason) => {
+            if (reason === 'time') {
+                gameState.showWord = true;
+                await updateGameImage(thread, gameMessage);
+                thread.send({ content: `Time's up, ${interaction.member}! Unfortunately, you couldn't guess the word in time. Better luck next time, mate!` });
+                await thread.setLocked(true);
+            }
         });
     }
 }
