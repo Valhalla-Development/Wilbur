@@ -128,7 +128,6 @@ export class Hangman {
                             gameState.showWord = true;
                             thread.send({ content: `Uh-oh, ${interaction.member}! Looks like you've run out of attempts ☹️. Better luck next time, mate!` });
                             await messageDelete(m, 0);
-                            await thread.setLocked(true);
                             collector.stop();
                         }
                     }
@@ -158,8 +157,8 @@ export class Hangman {
                 gameState.showWord = true;
                 await updateGameImage(thread, gameMessage);
                 thread.send({ content: `Time's up, ${interaction.member}! Unfortunately, you couldn't guess the word in time. Better luck next time, mate!` });
-                await thread.setLocked(true);
             }
+            await thread.setLocked(true);
         });
     }
 }
