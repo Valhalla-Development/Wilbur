@@ -13,7 +13,6 @@ import {
 import {
     Discord, Slash, ButtonComponent, ModalComponent,
 } from 'discordx';
-import { Category } from '@discordx/utilities';
 import { v4 as uuidv4 } from 'uuid';
 import {
     color, fetchAndScrambleWord, capitalise,
@@ -40,8 +39,6 @@ class Game {
 const activeGames: Record<string, Game> = {};
 
 @Discord()
-@Category('Fun')
-
 export class Scramble {
     /**
      * Creates an EmbedBuilder object for displaying the scrambled word to users.
@@ -73,7 +70,7 @@ export class Scramble {
      * Plays a game of word scrambling.
      * @param interaction - The CommandInteraction object that represents the user's interaction with the bot.
      */
-    @Slash({ description: 'Play a scramble word game' })
+    @Slash({ description: 'Unscramble a jumbled word in this fun and challenging game' })
     async scramble(interaction: CommandInteraction) {
         if (!interaction.channel) return;
         await interaction.deferReply({ ephemeral: true });
