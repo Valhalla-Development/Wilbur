@@ -2,7 +2,7 @@ import type { Client } from 'discordx';
 import { Discord, Once } from 'discordx';
 import si from 'systeminformation';
 import 'colors';
-import { ActivityType } from 'discord.js';
+import { ActivityType, ActivityOptions } from 'discord.js';
 
 /**
  * Discord.js Ready event handler.
@@ -81,11 +81,38 @@ export class Ready {
         );
 
         // Set activity
-        client.user?.setActivity(
-            `${client.guilds.cache.reduce((a, b) => a + b.memberCount, 0).toLocaleString('en')} sharks`,
+        const messages: ActivityOptions[] = [
+            {
+                type: ActivityType.Playing,
+                name: `with ${client.guilds.cache.reduce((a, b) => a + b.memberCount, 0).toLocaleString('en')} sharks`,
+            },
             {
                 type: ActivityType.Watching,
+                name: `${client.guilds.cache.size.toLocaleString('en')} swarms of sharks`,
             },
-        );
+            {
+                type: ActivityType.Playing,
+                name: 'shark tag 🏊',
+            },
+            {
+                type: ActivityType.Competing,
+                name: 'to see who can swim the fastest',
+            },
+            {
+                type: ActivityType.Listening,
+                name: 'shark music',
+            },
+        ];
+
+        function setRandomStatus() {
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            client.user?.setActivity(randomMessage);
+        }
+
+        // Set status immediately when the bot starts
+        setRandomStatus();
+
+        // Update status every 30 seconds
+        setInterval(setRandomStatus, 30 * 1000);
     }
 }
