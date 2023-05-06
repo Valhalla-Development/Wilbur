@@ -49,7 +49,7 @@ export class Ready {
         );
         console.log(
             'Invite:'.white.bold,
-            `https://discordapp.com/oauth2/authorize?client_id=${client.user?.id}&scope=bot%20applications.commands&permissions=415306870006`.blue.underline.bold,
+            `https://discordapp.com/oauth2/authorize?client_id=${client.user?.id}&scope=bot%20applications.commands&permissions=535327927376`.blue.underline.bold,
         );
 
         // Bot Specs
