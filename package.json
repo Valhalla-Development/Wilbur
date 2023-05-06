@@ -1,6 +1,6 @@
 {
   "name": "wilbur",
-  "version": "1.0.36",
+  "version": "1.0.37",
   "main": "build/Cluster.js",
   "repository": "https://github.com/RagnarLothbrok-Odin/Wilbur.git",
   "author": "Ragnar Lothbrok <30740511+RagnarLothbrok-Odin@users.noreply.github.com>",
