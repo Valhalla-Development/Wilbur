@@ -3,7 +3,6 @@ import type { CommandInteraction } from 'discord.js';
 import {
     AttachmentBuilder, ChannelType, Message, ThreadChannel, PermissionsBitField,
 } from 'discord.js';
-import { Category } from '@discordx/utilities';
 import axios from 'axios';
 import {
     deletableCheck, getRandomWord, messageDelete,
@@ -13,9 +12,8 @@ const cooldown = new Map();
 const cooldownSeconds = 1;
 
 @Discord()
-@Category('Fun')
 export class Hangman {
-    @Slash({ description: 'Play a game of Hangman' })
+    @Slash({ description: 'Test your word-guessing skills in a thrilling game of Hangman' })
     async hangman(interaction: CommandInteraction) {
         if (!interaction.channel || interaction.channel.type !== ChannelType.GuildText) return;
 
