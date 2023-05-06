@@ -7,7 +7,7 @@ import { Category } from '@discordx/utilities';
 import axios from 'axios';
 import {
     deletableCheck, getRandomWord, messageDelete,
-} from '../../utils/Util.js';
+} from '../utils/Util.js';
 
 const cooldown = new Map();
 const cooldownSeconds = 1;

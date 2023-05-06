@@ -17,7 +17,7 @@ import { Category } from '@discordx/utilities';
 import { v4 as uuidv4 } from 'uuid';
 import {
     color, fetchAndScrambleWord, capitalise,
-} from '../../utils/Util.js';
+} from '../utils/Util.js';
 
 class Game {
     gameIsActive: boolean;
