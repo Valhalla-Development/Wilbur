@@ -96,7 +96,7 @@ export class Ready {
             },
             {
                 type: ActivityType.Competing,
-                name: 'in a shark race',
+                name: 'a shark race',
             },
             {
                 type: ActivityType.Listening,
