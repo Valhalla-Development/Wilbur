@@ -40,7 +40,6 @@ export class Commands {
             embed.addFields({ name: commandMention, value: cmd.description });
         });
 
-        // Send the initial message with the select menu
         await interaction.reply({ embeds: [embed] });
     }
 }
