@@ -159,7 +159,7 @@ export async function fetchAndScrambleWord(difficulty: 'easy' | 'medium' | 'hard
 }
 
 export async function getRandomWord(): Promise<string | null> {
-    const url = 'https://api.ragnarokbot.com/v1/word';
+    const url = `https://api.ragnarokbot.com/v1/word?api_key=${process.env.WilburApi}`;
 
     try {
         const response = await axios.get(url);

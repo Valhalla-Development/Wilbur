@@ -42,6 +42,7 @@ export class Hangman {
         async function updateGameImage(channel: ThreadChannel, messageToUpdate?: Message) {
             const response = await axios.get('https://api.ragnarokbot.com/v1/hangman', {
                 params: {
+                    api_key: `${process.env.WilburApi}`,
                     word: gameState.word,
                     guessed: gameState.guessed,
                     hangmanState: gameState.hangmanState,
