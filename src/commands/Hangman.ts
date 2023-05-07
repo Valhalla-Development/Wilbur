@@ -40,23 +40,29 @@ export class Hangman {
         };
 
         async function updateGameImage(channel: ThreadChannel, messageToUpdate?: Message) {
-            const response = await axios.get('https://api.ragnarokbot.com/v1/hangman', {
-                params: {
-                    api_key: `${process.env.WilburApi}`,
-                    word: gameState.word,
-                    guessed: gameState.guessed,
-                    hangmanState: gameState.hangmanState,
-                    showWord: gameState.showWord,
-                },
-                responseType: 'arraybuffer',
-            });
+            let response;
+            try {
+                response = await axios.get('https://api.ragnarokbot.com/v1/hangman', {
+                    params: {
+                        api_key: `${process.env.WilburApi}`,
+                        word: gameState.word,
+                        guessed: gameState.guessed,
+                        hangmanState: gameState.hangmanState,
+                        showWord: gameState.showWord,
+                    },
+                    responseType: 'arraybuffer',
+                    headers: { Authorization: `Bearer ${process.env.WilburApi}` },
+                });
 
-            const attachment = new AttachmentBuilder(response.data, { name: 'Hangman.jpg' });
+                const attachment = new AttachmentBuilder(response.data, { name: 'Hangman.jpg' });
 
-            if (messageToUpdate) {
-                await messageToUpdate.edit({ files: [attachment] });
-            } else {
+                if (messageToUpdate) {
+                    return messageToUpdate.edit({ files: [attachment] });
+                }
                 return channel.send({ files: [attachment] });
+            } catch {
+                await channel.send('Oopsie daisy, mate! An unknown error occurred. Could you please try again later?');
+                return undefined;
             }
         }
 
@@ -75,6 +81,13 @@ export class Hangman {
         collector.on('collect', async (m) => {
             if (m.author.id !== interaction.user.id) {
                 await messageDelete(m, 0);
+                return;
+            }
+
+            if (!gameMessage) {
+                // The API call failed; inform the user and stop the game
+                await m.reply({ content: 'Oopsie daisy, mate! An unknown error occurred. Could you please try again later?' }).then((ms) => deletableCheck(ms, 2500));
+                collector.stop();
                 return;
             }
 
@@ -153,6 +166,11 @@ export class Hangman {
         });
 
         collector.on('end', async (_, reason) => {
+            if (!gameMessage) {
+                // The API call failed; don't send the end message
+                await thread.setLocked(true);
+                return;
+            }
             if (reason === 'time') {
                 gameState.hangmanState = 10;
                 gameState.showWord = true;
