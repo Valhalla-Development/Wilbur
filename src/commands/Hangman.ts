@@ -99,6 +99,7 @@ export class Hangman {
                 if (m.content.length === gameState.word.length) {
                     if (m.content.toLowerCase() === gameState.word.toLowerCase()) {
                         // Word is fully guessed
+                        gameState.guessed = gameState.word;
                         gameState.showWord = true;
                         await updateGameImage(thread, gameMessage);
                         thread.send({ content: `Fantastic work, ${interaction.member}! You've correctly guessed the word! 🎉. You're a natural at this, mate!` });
@@ -153,6 +154,7 @@ export class Hangman {
 
         collector.on('end', async (_, reason) => {
             if (reason === 'time') {
+                gameState.hangmanState = 10;
                 gameState.showWord = true;
                 await updateGameImage(thread, gameMessage);
                 thread.send({ content: `Time's up, ${interaction.member}! Unfortunately, you couldn't guess the word in time. Better luck next time, mate!` });
