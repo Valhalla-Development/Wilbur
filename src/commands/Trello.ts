@@ -5,7 +5,6 @@ import type { Client } from 'discordx';
 import { ApplicationCommandOptionType, ChannelType } from 'discord.js';
 import type { CommandInteraction } from 'discord.js';
 import axios from 'axios';
-import process from 'process';
 
 @Discord()
 export class Trello {
