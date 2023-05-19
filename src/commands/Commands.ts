@@ -24,7 +24,7 @@ export class Commands {
 
         const embed = new EmbedBuilder()
             .setColor('#e91e63')
-            .setDescription(`G'day, mateys! I'm ${client.user?.username} and I'm a shark! Don't worry, though, I'm not here to bite - I'm just a friendly Discord bot ready for fun!`)
+            .setDescription(`> G'day, mateys! I'm ${client.user?.username} and I'm a shark! Don't worry, though, I'm not here to bite - I'm just a friendly Discord bot ready for fun!`)
             .setAuthor({ name: `${client.user?.username} Help`, iconURL: `${interaction.guild?.iconURL()}` })
             .setThumbnail(`${client.user?.displayAvatarURL()}`)
             .setFooter({
@@ -37,7 +37,7 @@ export class Commands {
         filteredCommands.forEach((cmd) => {
             const commandId = commandIds[cmd.name];
             const commandMention = commandId ? `</${cmd.name}:${commandId}>` : capitalise(cmd.name);
-            embed.addFields({ name: commandMention, value: cmd.description });
+            embed.addFields({ name: `<:fullDot:1109090626395443241> ${commandMention}`, value: `\u200b \u200b <:halfDot:1109090623421689908> ${cmd.description}` });
         });
 
         await interaction.reply({ embeds: [embed] });
