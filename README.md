@@ -22,6 +22,10 @@ Wilbur is a bot with an emphasis on fun. It was created with the intention of be
 
 You can either host this bot yourself or invite it to your server by [clicking here](https://discordapp.com/oauth2/authorize?client_id=1103308818470932653&scope=bot%20applications.commands&permissions=535327927376).
 
+## Trello
+
+You can now follow development and make suggestions/report issues on our [Trello Board](https://trello.com/b/TpKTayKW/wilbur)
+
 ## Usage (Invite)
 
 - Invite the bot by [clicking here](https://discordapp.com/oauth2/authorize?client_id=1103308818470932653&scope=bot%20applications.commands&permissions=535327927376).
