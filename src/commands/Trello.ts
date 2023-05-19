@@ -1,7 +1,8 @@
 import {
     Discord, Slash, SlashChoice, SlashOption,
 } from 'discordx';
-import { ApplicationCommandOptionType } from 'discord.js';
+import type { Client } from 'discordx';
+import { ApplicationCommandOptionType, ChannelType } from 'discord.js';
 import type { CommandInteraction } from 'discord.js';
 import axios from 'axios';
 import process from 'process';
@@ -11,6 +12,7 @@ export class Trello {
     /**
      * Slash command to POST to Trello.
      * @param interaction - The command interaction.
+     * @param client - The Discord client.
      * @param reportType - Type of POST request
      * @param title - The title for the card
      * @param description - A description of the issue/suggestion
@@ -59,6 +61,8 @@ export class Trello {
             attachment: string,
 
             interaction: CommandInteraction,
+
+            client: Client,
     ) {
         const options = {
             Suggestion: {
@@ -81,8 +85,13 @@ export class Trello {
             keepFromSource: 'attachments,checklists,comments,customFields,due,start,labels,members,start,stickers',
             name: title,
             desc: options[reportType as 'Suggestion' | 'Issue'].desc,
-        }).then(() => {
+        }).then((res) => {
             interaction.reply({ content: `Your \`${reportType}\` has been logged successfully on the [Trello board!](https://trello.com/b/TpKTayKW/wilbur), appreciate the feedback, mate! `, ephemeral: true });
+
+            if (process.env.TrelloChannel) {
+                const channel = client.channels.cache.get(process.env.TrelloChannel);
+                if (channel && channel.type === ChannelType.GuildText) channel.send({ content: `New ${reportType}, from ${interaction.user.username}: ${res.data.url}` });
+            }
         }).catch((error) => {
             interaction.reply({ content: 'Blimey! An unknown error occurred mate! I\'ve reported the issue with my creators.' });
             console.error(error);
