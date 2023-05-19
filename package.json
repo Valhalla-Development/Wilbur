@@ -1,6 +1,6 @@
 {
   "name": "wilbur",
-  "version": "1.0.52",
+  "version": "1.0.55",
   "main": "build/Cluster.js",
   "repository": "https://github.com/RagnarLothbrok-Odin/Wilbur.git",
   "author": "Ragnar Lothbrok <30740511+RagnarLothbrok-Odin@users.noreply.github.com>",
@@ -28,10 +28,10 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@types/node": "^20.1.0",
+    "@types/node": "^20.2.1",
     "@types/uuid": "^9.0.1",
-    "@typescript-eslint/eslint-plugin": "^5.59.2",
-    "@typescript-eslint/parser": "^5.59.2",
+    "@typescript-eslint/eslint-plugin": "^5.59.6",
+    "@typescript-eslint/parser": "^5.59.6",
     "eslint": "^8.40.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-import": "^2.27.5",
