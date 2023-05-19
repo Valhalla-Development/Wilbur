@@ -49,7 +49,7 @@ $ yarn start      // Builds and starts your bot. You are now ready to use Wilbur
 ## FAQ
 
 **Q: How can I obtain the Wilbur API key?**
-A: To get the Wilbur API key, please [send an email](mailto:ragnarlothbrokjr@proton.me?subject=Wilbur%20API%20Key%20Request&body=Hello%20Wilbur%20Team%2C%0D%0A%0D%0AI would like to request an API key for using Wilbur.%0D%0A%0D%0AThank%20you!), and our team will assist you with your request.
+A: To get the Wilbur API key, please [send an email](mailto:ragnarlothbrokjr@proton.me?subject=Wilbur%20API%20Key%20Request&body=Hello%20Wilbur%20Team%2C%0D%0A%0D%0AI%20would%20like%20to%20request%20an%20API%20key%20for%20using%20Wilbur.%0D%0A%0D%0AThank%20you!), and our team will assist you with your request.
 
 **Q: Where can I find the Wordnik API key?**
 A: You can obtain the Wordnik API key by following the instructions provided on the [Wordnik Developer Portal](https://developer.wordnik.com/gettingstarted).
