@@ -7,7 +7,7 @@ import { EmbedBuilder } from 'discord.js';
 import { capitalise, getCommandIds } from '../utils/Util.js';
 
 @Discord()
-export class Commands {
+export class Help {
     /**
      * Slash command to display list of commands.
      * @param interaction - The command interaction.
