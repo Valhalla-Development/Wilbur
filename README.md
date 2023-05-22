@@ -33,7 +33,7 @@ You can now follow development and make suggestions/report issues on our [Trello
 - You can view available commands by running the following command:
 
 ```text
-/commands
+/help
 ```
 
 ## Usage (Self Host)
