@@ -129,6 +129,11 @@ export class Hangman {
                 }
             }
 
+            if (!letterPattern.test(m.content)) {
+                await messageDelete(m, 0);
+                return;
+            }
+
             // If letter has already been guessed
             if (gameState && letterPattern.test(m.content)) {
                 const letter = m.content.toLowerCase();
