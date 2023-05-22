@@ -53,6 +53,12 @@ export class Help {
             });
         });
 
+        const inviteButton = new ButtonBuilder()
+            .setLabel('Invite Me')
+            .setEmoji('🤝')
+            .setStyle(ButtonStyle.Link)
+            .setURL(`https://discordapp.com/oauth2/authorize?client_id=${client.user?.id}&scope=bot%20applications.commands&permissions=535327927376`);
+
         const suggestButton = new ButtonBuilder()
             .setCustomId('trello_suggest')
             .setLabel('Suggest a Feature')
@@ -65,7 +71,7 @@ export class Help {
             .setEmoji('🐛')
             .setStyle(ButtonStyle.Secondary);
 
-        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(suggestButton, issueButton);
+        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(inviteButton, suggestButton, issueButton);
 
         await interaction.reply({ embeds: [embed], components: [row] });
     }
