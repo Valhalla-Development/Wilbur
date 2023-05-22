@@ -14,7 +14,7 @@ import {
     TextInputStyle,
 } from 'discord.js';
 import axios from 'axios';
-import { capitalise, color, getCommandIds } from '../utils/Util.js';
+import { capitalise, getCommandIds } from '../utils/Util.js';
 
 @Discord()
 export class Help {
@@ -139,7 +139,7 @@ export class Help {
             name: modalTitle,
             desc: options[reportType as 'Suggestion' | 'Issue'].desc,
         }).then((res) => {
-            interaction.reply({ content: `Your \`${reportType}\` has been logged successfully on the [Trello board!](https://trello.com/b/TpKTayKW/wilbur), appreciate the feedback, mate! `, ephemeral: true });
+            interaction.reply({ content: `Your \`${reportType}\` has been logged successfully on the [Trello board!](${res.data.url}), appreciate the feedback, mate! `, ephemeral: true });
 
             if (process.env.TrelloChannel) {
                 const channel = client.channels.cache.get(process.env.TrelloChannel);
