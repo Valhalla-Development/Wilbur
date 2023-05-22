@@ -1,6 +1,6 @@
 {
   "name": "wilbur",
-  "version": "1.0.72",
+  "version": "1.0.75",
   "main": "build/Cluster.js",
   "repository": "https://github.com/Valhalla-Development/Wilbur.git",
   "author": "Ragnar Lothbrok <ragnarlothbrokjr@proton.me>",
