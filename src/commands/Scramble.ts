@@ -105,9 +105,17 @@ export class Scramble {
                             url: `https://wordnik.com/words/${game.originalWord}`,
                             iconURL: `${interaction.guild?.iconURL({ extension: 'png' })}`,
                         })
-                        .setDescription(`Blimey, no one managed to guess the scrambled word (${game.scrambledWord.toLowerCase()}). Here's the answer: \\n\\n>>> ${capitalise(`${game.originalWord}`)}${game.partOfSpeech ? `\n*${game.partOfSpeech}*` : ''}. Better luck next time, mates!`);
+                        .setDescription(`Blimey, no one managed to guess the scrambled word **(${game.scrambledWord.toLowerCase()})**. Here's the answer: \n\n>>> ${capitalise(`${game.originalWord}`)}${game.partOfSpeech ? `\n*${game.partOfSpeech}*` : ''}. Better luck next time, mates!`);
 
                     if (game.fieldArray.length) timeOut.addFields(...game.fieldArray);
+
+                    const oldEmbed = new EmbedBuilder()
+                        .setColor(color(`${interaction.guild?.members.me?.displayHexColor}`))
+                        .setAuthor({
+                            name: 'Scramble Word',
+                            url: `https://wordnik.com/words/${game.originalWord}`,
+                            iconURL: `${interaction.guild?.iconURL({ extension: 'png' })}`,
+                        });
 
                     const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
                         new ButtonBuilder()
@@ -118,7 +126,10 @@ export class Scramble {
                     );
 
                     // Game has ended
-                    await initial.edit({ embeds: [timeOut], components: [buttonRow] });
+                    const newMessage = await interaction.channel?.send({ embeds: [timeOut], components: [buttonRow] });
+
+                    oldEmbed.setDescription(`This game has ended. See: https://discord.com/channels/${interaction.guild?.id}/${interaction.channel?.id}/${newMessage?.id}`);
+                    await initial.edit({ embeds: [oldEmbed], components: [buttonRow] });
                 }
             }, 10 * 60 * 1000); // 10 minutes
         } catch (error) {
@@ -175,6 +186,14 @@ export class Scramble {
 
                 if (game.fieldArray.length) successEmbed.addFields(...game.fieldArray);
 
+                const oldEmbed = new EmbedBuilder()
+                    .setColor(color(`${interaction.guild?.members.me?.displayHexColor}`))
+                    .setAuthor({
+                        name: 'Scramble Word',
+                        url: `https://wordnik.com/words/${game.originalWord}`,
+                        iconURL: `${interaction.guild?.iconURL({ extension: 'png' })}`,
+                    });
+
                 const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
                     new ButtonBuilder()
                         .setCustomId('scramble_guess')
@@ -184,7 +203,10 @@ export class Scramble {
                 );
 
                 if (!interaction.isFromMessage()) return;
-                await interaction.update({ embeds: [successEmbed], components: [row] });
+                const newMessage = await interaction.channel?.send({ embeds: [successEmbed], components: [row] });
+
+                oldEmbed.setDescription(`This game has ended. See: https://discord.com/channels/${interaction.guild?.id}/${interaction.channel?.id}/${newMessage?.id}`);
+                await interaction.update({ embeds: [oldEmbed], components: [row] });
             } else {
                 await interaction.reply({ content: `${interaction.member} incorrectly guessed **${modalField}**` });
             }
