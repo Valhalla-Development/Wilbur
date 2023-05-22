@@ -77,7 +77,7 @@ export class Hangman {
 
         const letterPattern = /^[a-zA-Z]$/;
         const filter = (m: Message) => !m.author.bot;
-        const collector = thread.createMessageCollector({ filter, time: 15_000 });
+        const collector = thread.createMessageCollector({ filter, time: 30_000 });
         collector.on('collect', async (m) => {
             if (m.author.id !== interaction.user.id) {
                 await messageDelete(m, 0);
