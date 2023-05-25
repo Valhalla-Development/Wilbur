@@ -80,6 +80,7 @@ export class Hangman {
         const collector = thread.createMessageCollector({ filter, time: 30_000 });
         collector.on('collect', async (m) => {
             if (m.author.id !== interaction.user.id) {
+                await m.reply({ content: `Whoa there, calm down ${m.author} mate! Only ${interaction.member} can play this game!`, allowedMentions: { repliedUser: false } }).then((ms) => deletableCheck(ms, 2500));
                 await messageDelete(m, 0);
                 return;
             }
