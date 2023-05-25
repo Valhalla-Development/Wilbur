@@ -66,9 +66,13 @@ async function run() {
     const missingTokenError = 'Hey mate, you gotta hand over the token to the client, otherwise, we can\'t proceed!';
     const invalidLoggingValueError = 'Either set the \'logging\' value to true or false, mate.';
     const invalidLoggingChannel = 'Oi, if you\'re setting logging to true, make sure to pass a logging channel along with it, mate!';
+    const invalidValhallaApiUri = 'Blimey, you forgot to provide ';
+    const invalidValhallaApiKey = 'Blimey, you forgot to provide a valid API key for Valhalla API.';
 
     if (process.env.Logging !== 'true' && process.env.Logging !== 'false') throw new Error(invalidLoggingValueError);
     if (process.env.Logging === 'true' && !process.env.LoggingChannel) throw new Error(invalidLoggingChannel);
+    if (!process.env.ValhallaAPIUri) throw new Error(invalidValhallaApiUri);
+    if (!process.env.ValhallaAPIKey) throw new Error(invalidValhallaApiKey);
     if (!process.env.Token) throw Error(missingTokenError);
 
     /**
