@@ -159,7 +159,7 @@ export async function fetchAndScrambleWord(difficulty: 'easy' | 'medium' | 'hard
 }
 
 /**
- * Fetches a random word from the RagnarokBot API.
+ * Fetches a random word from the Valhalla API.
  * @returns A Promise that resolves to a random word if successful or null if an error occurs.
  * @throws Throws an error if the request fails or if there is an unexpected response status.
  * @example
@@ -167,11 +167,11 @@ export async function fetchAndScrambleWord(difficulty: 'easy' | 'medium' | 'hard
  * console.log(randomWord);
  */
 export async function getRandomWord(): Promise<string | null> {
-    const url = 'https://api.ragnarokbot.com/v1/word';
+    const url = `${process.env.ValhallaAPIUri}/word`;
 
     try {
         const response = await axios.get(url, {
-            headers: { Authorization: `Bearer ${process.env.WilburApi}` },
+            headers: { Authorization: `Bearer ${process.env.ValhallaAPIKey}` },
         });
 
         if (response.status === 200) {

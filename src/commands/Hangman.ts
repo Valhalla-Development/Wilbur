@@ -42,16 +42,16 @@ export class Hangman {
         async function updateGameImage(channel: ThreadChannel, messageToUpdate?: Message) {
             let response;
             try {
-                response = await axios.get('https://api.ragnarokbot.com/v1/hangman', {
+                response = await axios.get(`${process.env.ValhallaAPIUri}/hangman`, {
                     params: {
-                        api_key: `${process.env.WilburApi}`,
+                        api_key: `${process.env.ValhallaAPIKey}`,
                         word: gameState.word,
                         guessed: gameState.guessed,
                         hangmanState: gameState.hangmanState,
                         showWord: gameState.showWord,
                     },
                     responseType: 'arraybuffer',
-                    headers: { Authorization: `Bearer ${process.env.WilburApi}` },
+                    headers: { Authorization: `Bearer ${process.env.ValhallaAPIKey}` },
                 });
 
                 const attachment = new AttachmentBuilder(response.data, { name: 'Hangman.jpg' });
