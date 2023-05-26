@@ -29,7 +29,7 @@ export class Help {
 
         // Create an array of command names
         const filteredCommands = MetadataStorage.instance.applicationCommands.filter(
-            (cmd: DApplicationCommand) => cmd.name.toLowerCase() !== 'commands',
+            (cmd: DApplicationCommand) => cmd.name.toLowerCase() !== 'help',
         );
 
         const embed = new EmbedBuilder()
