@@ -181,7 +181,7 @@ export class Scramble {
                         url: `https://wordnik.com/words/${game.originalWord}`,
                         iconURL: `${interaction.guild?.iconURL({ extension: 'png' })}`,
                     })
-                    .setDescription(`Well done, ${interaction.member} you managed to guess the scrambled word **(${game.scrambledWord.toLowerCase()})**\n\n>>> **${capitalise(`${game.originalWord}`)}**${game.partOfSpeech ? `\n*${game.partOfSpeech}*` : ''}`);
+                    .setDescription(`Well done, ${interaction.member} you managed to guess the scrambled word **(${game.scrambledWord.toLowerCase()})**\n\n>>> ${capitalise(`**${game.originalWord}`)}**${`\n*${game.partOfSpeech}*`}${`\n*${game.pronunciation}*`}`);
 
                 if (game.fieldArray.length) successEmbed.addFields(...game.fieldArray);
 
