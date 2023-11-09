@@ -79,11 +79,10 @@ export class Scramble {
         const gameId = uuidv4(); // Generate a unique id for the game
         activeGames[gameId] = game; // Store the game state in the activeGames object
 
-        const difficulty = 'easy';
         try {
             const {
                 originalWord, scrambledWord, pronunciation, partOfSpeech, fieldArray,
-            } = await fetchAndScrambleWord(difficulty);
+            } = await fetchAndScrambleWord();
             game.originalWord = originalWord;
             game.scrambledWord = scrambledWord;
             game.pronunciation = pronunciation;
@@ -105,7 +104,7 @@ export class Scramble {
                             url: `https://wordnik.com/words/${game.originalWord}`,
                             iconURL: `${interaction.guild?.iconURL({ extension: 'png' })}`,
                         })
-                        .setDescription(`Blimey, no one managed to guess the scrambled word **(${game.scrambledWord.toLowerCase()})**. Here's the answer: \n\n>>> ${capitalise(`${game.originalWord}`)}${game.partOfSpeech ? `\n*${game.partOfSpeech}*` : ''}. Better luck next time, mates!`);
+                        .setDescription(`Blimey, no one managed to guess the scrambled word **(${game.scrambledWord.toLowerCase()})**. Here's the answer: \n\n>>> ${capitalise(`**${game.originalWord}`)}**${`\n*${game.partOfSpeech}*`}${`\n*${game.pronunciation}*`}`);
 
                     if (game.fieldArray.length) timeOut.addFields(...game.fieldArray);
 
