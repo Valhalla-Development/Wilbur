@@ -1,11 +1,31 @@
-# Node FIles
+# ========================
+# Node.js related files
+# ========================
+
+# Dependency directories
 node_modules/
 
-# Config File
+# Environment variables
 .env
 
-# Irritating file create by Mac
+# ========================
+# System generated files
+# ========================
+
+# macOS generated files
 .DS_Store
 
-# Build files
-build/
+# ========================
+# IDEs and editors
+# ========================
+
+# JetBrains IDEs (e.g., WebStorm, IntelliJ)
+.idea/
+
+# ========================
+# Dependency management
+# ========================
+
+# Yarn: lock file and error log
+yarn-error.log
+.yarn/install-state.gz
