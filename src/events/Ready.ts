@@ -2,7 +2,7 @@ import type { Client } from 'discordx';
 import { Discord, Once } from 'discordx';
 import si from 'systeminformation';
 import 'colors';
-import { ActivityType, ActivityOptions } from 'discord.js';
+import { ActivityType, ActivityOptions, version } from 'discord.js';
 
 /**
  * Discord.js Ready event handler.
@@ -72,7 +72,7 @@ export class Ready {
         );
         console.log(
             'Discord.js Version:'.white.bold,
-            `${process.env.npm_package_dependencies_discord_js?.substring(1)}`.green.bold,
+            `${version}`.green.bold,
         );
         console.log(
             `${client.user?.username} Version:`.white.bold,
