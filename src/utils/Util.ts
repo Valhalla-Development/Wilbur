@@ -28,15 +28,6 @@ export function color(me: string): ColorResolvable {
 }
 
 /**
- * Removes HTML tags from a given string.
- * @param text - The input string containing HTML tags to be removed.
- * @returns The processed string with HTML tags removed.
- */
-function removeHtmlTags(text: string): string {
-    return text.replace(/<[^>]*>/g, '');
-}
-
-/**
  * Scrambles the input word using the Fisher-Yates shuffle algorithm.
  * @param word - The input word to be scrambled.
  * @returns The scrambled word as a string.
