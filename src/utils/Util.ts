@@ -249,12 +249,17 @@ export async function postToReddit(client: Client, cnt: string, author: string) 
         password: process.env.RedditPassword as string,
     });
 
-    await reddit.submitSelfpost({
-        subredditName: process.env.RedditSubredditName as string,
-        title: `📣 | ${cnt.length > 50 ? `${cnt.substring(0, 47)}...` : cnt}`,
-        text: `${cnt}\n\nPosted by ${author} in our Discord Community at ${process.env.DiscordSupport}\n\nThis is an automated post.`,
-    })
-        .then(() => {
+    await reddit.getSubreddit(process.env.RedditSubredditName as string)
+        .submitSelfpost({
+            subredditName: process.env.RedditSubredditName as string,
+            title: `📣 | ${cnt.length > 50 ? `${cnt.substring(0, 47)}...` : cnt}`,
+            text: `${cnt}\n\nPosted by ${author} in our Discord Community at ${process.env.DiscordSupport}\n\nThis is an automated post.`,
+        })
+        .then((post) => {
+            if (process.env.RedditFlair) {
+                post.assignFlair({ text: process.env.RedditFlair, cssClass: '' });
+            }
+
             console.log(`Posted message "${cnt}" to Reddit.`);
         })
         .catch((e) => console.error(e));
