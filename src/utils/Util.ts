@@ -251,13 +251,11 @@ export async function postToReddit(client: Client, cnt: string, author: string) 
 
     await reddit.submitSelfpost({
         subredditName: process.env.RedditSubredditName as string,
-        title: `📣 | ${cnt}`,
+        title: `📣 | ${cnt.length > 50 ? `${cnt.substring(0, 47)}...` : cnt}`,
         text: `${cnt}\n\nPosted by ${author} in our Discord Community at ${process.env.DiscordSupport}\n\nThis is an automated post.`,
     })
-        .then((res) => {
-            console.log(res);
+        .then(() => {
+            console.log(`Posted message "${cnt}" to Reddit.`);
         })
         .catch((e) => console.error(e));
-
-    console.log(`Posted message "${cnt}" to Reddit.`);
 }
