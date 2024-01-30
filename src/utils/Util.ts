@@ -3,6 +3,7 @@ import { Client } from 'discordx';
 import { PermissionsBitField } from 'discord.js';
 import 'colors';
 import axios from 'axios';
+import Snoowrap from 'snoowrap';
 
 /**
  * Capitalises the first letter of each word in a string.
@@ -203,4 +204,60 @@ export async function getCommandIds(client: Client) {
         console.error('Error fetching global commands:', error);
         return {};
     }
+}
+
+export async function postToReddit(client: Client, cnt: string, author: string) {
+    /**
+     * Checks if the required environment variables are defined.
+     * Throws an error with a list of missing variables if any are not set.
+     * @function checkRequiredEnvVars
+     * @throws An error if any of the required environment variables are missing.
+     */
+    function checkRequiredEnvVars(): void {
+        // Array of required environment variable names
+        const requiredVars = [
+            'DiscordSupport',
+            'DiscordChannelId',
+            'RedditSubredditName',
+            'RedditClientId',
+            'RedditClientSecret',
+            'RedditUsername',
+            'RedditPassword',
+        ];
+
+        // Filtering out the missing environment variables
+        const missingVars = requiredVars.filter((varName) => !process.env[varName]);
+
+        // If any required variables are missing, throw an error
+        if (missingVars.length > 0) {
+            throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
+        }
+    }
+
+    try {
+        checkRequiredEnvVars();
+    } catch (error) {
+        console.error(error);
+        return;
+    }
+
+    const reddit = new Snoowrap({
+        userAgent: client.user!.username,
+        clientId: process.env.RedditClientId as string,
+        clientSecret: process.env.RedditClientSecret as string,
+        username: process.env.RedditUsername as string,
+        password: process.env.RedditPassword as string,
+    });
+
+    await reddit.submitSelfpost({
+        subredditName: process.env.RedditSubredditName as string,
+        title: `📣 | ${cnt}`,
+        text: `${cnt}\n\nPosted by ${author} in our Discord Community at ${process.env.DiscordSupport}\n\nThis is an automated post.`,
+    })
+        .then((res) => {
+            console.log(res);
+        })
+        .catch((e) => console.error(e));
+
+    console.log(`Posted message "${cnt}" to Reddit.`);
 }
