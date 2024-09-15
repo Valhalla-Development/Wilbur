@@ -8,7 +8,7 @@ import {
     ModalBuilder,
     TextInputBuilder,
     TextInputStyle,
-    ModalSubmitInteraction,
+    ModalSubmitInteraction, ChannelType,
 } from 'discord.js';
 import {
     Discord, Slash, ButtonComponent, ModalComponent,
@@ -72,7 +72,7 @@ export class Scramble {
      */
     @Slash({ description: 'Unscramble a jumbled word in this fun and challenging game' })
     async scramble(interaction: CommandInteraction) {
-        if (!interaction.channel) return;
+        if (!interaction.channel || interaction.channel.type !== ChannelType.GuildText) return;
         await interaction.deferReply({ ephemeral: true });
 
         const game = new Game();
@@ -125,6 +125,8 @@ export class Scramble {
                     );
 
                     // Game has ended
+                    if (!interaction.channel || interaction.channel.type !== ChannelType.GuildText) return;
+
                     const newMessage = await interaction.channel?.send({ embeds: [timeOut], components: [buttonRow] });
 
                     oldEmbed.setDescription(`This game has ended. See: https://discord.com/channels/${interaction.guild?.id}/${interaction.channel?.id}/${newMessage?.id}`);
@@ -202,6 +204,8 @@ export class Scramble {
                 );
 
                 if (!interaction.isFromMessage()) return;
+                if (!interaction.channel || interaction.channel.type !== ChannelType.GuildText) return;
+
                 const newMessage = await interaction.channel?.send({ embeds: [successEmbed], components: [row] });
 
                 oldEmbed.setDescription(`This game has ended. See: https://discord.com/channels/${interaction.guild?.id}/${interaction.channel?.id}/${newMessage?.id}`);
