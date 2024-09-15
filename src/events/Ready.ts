@@ -1,7 +1,7 @@
 import type { Client } from 'discordx';
 import { Discord, Once } from 'discordx';
 import si from 'systeminformation';
-import 'colors';
+import '@colors/colors';
 import { ActivityType, ActivityOptions, version } from 'discord.js';
 
 /**
