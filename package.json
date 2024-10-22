@@ -12,9 +12,9 @@
   "type": "module",
   "main": "build/Cluster.js",
   "scripts": {
-    "audit": "eslint . --format codeframe",
-    "dev": "tsc-watch --onSuccess \"node ./build/Cluster.js\"",
-    "start": "tsc && node build/Cluster.js"
+    "audit": "eslint . --ext .ts --format codeframe --max-warnings 0",
+    "dev": "tsc-watch --onSuccess \"node ./build/Cluster.js\" --onFailure \"echo Compilation failed\"",
+    "start": "rm -rf build && tsc && node build/Cluster.js"
   },
   "dependencies": {
     "@colors/colors": "^1.6.0",
