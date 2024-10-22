@@ -1,7 +1,5 @@
 import { dirname, importx } from '@discordx/importer';
-import {
-    ChannelType, codeBlock, EmbedBuilder, IntentsBitField,
-} from 'discord.js';
+import { IntentsBitField } from 'discord.js';
 import { Client } from 'discordx';
 import 'dotenv/config';
 import { ClusterClient, getInfo } from 'discord-hybrid-sharding';
