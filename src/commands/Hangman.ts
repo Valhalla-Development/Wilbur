@@ -1,12 +1,10 @@
 import { Discord, Slash } from 'discordx';
 import type { CommandInteraction } from 'discord.js';
 import {
-    AttachmentBuilder, ChannelType, Message, ThreadChannel, PermissionsBitField,
+    AttachmentBuilder, ChannelType, Message, PermissionsBitField, ThreadChannel,
 } from 'discord.js';
 import axios from 'axios';
-import {
-    deletableCheck, getRandomWord, messageDelete,
-} from '../utils/Util.js';
+import { deletableCheck, getRandomWord, messageDelete } from '../utils/Util.js';
 
 const cooldown = new Map();
 const cooldownSeconds = 1;
@@ -42,16 +40,16 @@ export class Hangman {
         async function updateGameImage(channel: ThreadChannel, messageToUpdate?: Message) {
             let response;
             try {
-                response = await axios.get(`${process.env.ValhallaAPIUri}/hangman`, {
+                response = await axios.get(`${process.env.VALHALLA_API_URI}/hangman`, {
                     params: {
-                        api_key: `${process.env.ValhallaAPIKey}`,
+                        api_key: `${process.env.VALHALLA_API_KEY}`,
                         word: gameState.word,
                         guessed: gameState.guessed,
                         hangmanState: gameState.hangmanState,
                         showWord: gameState.showWord,
                     },
                     responseType: 'arraybuffer',
-                    headers: { Authorization: `Bearer ${process.env.ValhallaAPIKey}` },
+                    headers: { Authorization: `Bearer ${process.env.VALHALLA_API_KEY}` },
                 });
 
                 const attachment = new AttachmentBuilder(response.data, { name: 'Hangman.jpg' });

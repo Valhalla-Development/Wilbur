@@ -14,7 +14,7 @@ export class MessageCreate {
         // Return if the author is a bot, preventing the bot from replying to itself or other bots.
         if (message.author.bot) return;
 
-        if (process.env.RedditPost === 'true' && (process.env.DiscordChannelId && process.env.DiscordChannelId === message.channel.id)) {
+        if (process.env.REDDIT_POST === 'true' && (process.env.DISCORD_CHANNEL_ID && process.env.DISCORD_CHANNEL_ID === message.channel.id)) {
             await postToReddit(client, message.content, message.author.displayName);
         }
     }

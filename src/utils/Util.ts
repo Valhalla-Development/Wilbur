@@ -1,6 +1,11 @@
 import {
-    ChannelType, codeBlock, ColorResolvable, EmbedBuilder, Message, TextChannel,
+    ChannelType,
+    codeBlock,
+    ColorResolvable,
+    EmbedBuilder,
+    Message,
     PermissionsBitField,
+    TextChannel,
 } from 'discord.js';
 import { Client } from 'discordx';
 import '@colors/colors';
@@ -79,11 +84,11 @@ export async function fetchAndScrambleWord(): Promise<{
     definition: string[];
     fieldArray: { name: string; value: string }[];
 }> {
-    const url = `${process.env.ValhallaAPIUri}/wordEnhanced`;
+    const url = `${process.env.VALHALLA_API_URI}/wordEnhanced`;
 
     try {
         const response = await axios.get(url, {
-            headers: { Authorization: `Bearer ${process.env.ValhallaAPIKey}` },
+            headers: { Authorization: `Bearer ${process.env.VALHALLA_API_KEY}` },
         });
 
         const { data } = response;
@@ -120,11 +125,11 @@ export async function fetchAndScrambleWord(): Promise<{
  * console.log(randomWord);
  */
 export async function getRandomWord(): Promise<string | null> {
-    const url = `${process.env.ValhallaAPIUri}/word`;
+    const url = `${process.env.VALHALLA_API_URI}/word`;
 
     try {
         const response = await axios.get(url, {
-            headers: { Authorization: `Bearer ${process.env.ValhallaAPIKey}` },
+            headers: { Authorization: `Bearer ${process.env.VALHALLA_API_KEY}` },
         });
 
         if (response.status === 200) {
@@ -203,13 +208,13 @@ export async function postToReddit(client: Client, cnt: string, author: string) 
     function checkRequiredEnvVars(): void {
         // Array of required environment variable names
         const requiredVars = [
-            'DiscordSupport',
-            'DiscordChannelId',
-            'RedditSubredditName',
-            'RedditClientId',
-            'RedditClientSecret',
-            'RedditUsername',
-            'RedditPassword',
+            'DISCORD_SUPPORT',
+            'DISCORD_CHANNEL_ID',
+            'REDDIT_SUBREDDIT_NAME',
+            'REDDIT_CLIENT_ID',
+            'REDDIT_CLIENT_SECRET',
+            'REDDIT_USERNAME',
+            'REDDIT_PASSWORD',
         ];
 
         // Filtering out the missing environment variables
@@ -230,21 +235,21 @@ export async function postToReddit(client: Client, cnt: string, author: string) 
 
     const reddit = new Snoowrap({
         userAgent: client.user!.username,
-        clientId: process.env.RedditClientId as string,
-        clientSecret: process.env.RedditClientSecret as string,
-        username: process.env.RedditUsername as string,
-        password: process.env.RedditPassword as string,
+        clientId: process.env.REDDIT_CLIENT_ID as string,
+        clientSecret: process.env.REDDIT_CLIENT_SECRET as string,
+        username: process.env.REDDIT_USERNAME as string,
+        password: process.env.REDDIT_PASSWORD as string,
     });
 
-    await reddit.getSubreddit(process.env.RedditSubredditName as string)
+    await reddit.getSubreddit(process.env.REDDIT_SUBREDDIT_NAME as string)
         .submitSelfpost({
-            subredditName: process.env.RedditSubredditName as string,
+            subredditName: process.env.REDDIT_SUBREDDIT_NAME as string,
             title: `📣 | ${cnt.length > 50 ? `${cnt.substring(0, 47)}...` : cnt}`,
-            text: `${cnt}\n\nPosted by ${author} in our Discord Community at ${process.env.DiscordSupport}\n\nThis is an automated post.`,
+            text: `${cnt}\n\nPosted by ${author} in our Discord Community at ${process.env.DISCORD_SUPPORT}\n\nThis is an automated post.`,
         })
         .then((post) => {
-            if (process.env.RedditFlair) {
-                post.assignFlair({ text: process.env.RedditFlair, cssClass: '' });
+            if (process.env.REDDIT_FLAIR) {
+                post.assignFlair({ text: process.env.REDDIT_FLAIR, cssClass: '' });
             }
 
             console.log(`Posted message "${cnt}" to Reddit.`);

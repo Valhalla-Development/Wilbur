@@ -119,7 +119,7 @@ async function run() {
         await sleep(time);
         client.cluster = new ClusterClient(client);
         await sleep(time);
-        await client.login(process.env.Token as string);
+        await client.login(process.env.BOT_TOKEN as string);
     };
     await loadSequentially();
 }

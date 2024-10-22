@@ -1,15 +1,17 @@
 import type { Client, DApplicationCommand } from 'discordx';
 import {
-    Discord, Slash, MetadataStorage, ButtonComponent, ModalComponent,
+    ButtonComponent, Discord, MetadataStorage, ModalComponent, Slash,
 } from 'discordx';
 import type { CommandInteraction } from 'discord.js';
 import {
     ActionRowBuilder,
     ButtonBuilder,
     ButtonInteraction,
-    ButtonStyle, ChannelType,
+    ButtonStyle,
+    ChannelType,
     EmbedBuilder,
-    ModalBuilder, ModalSubmitInteraction,
+    ModalBuilder,
+    ModalSubmitInteraction,
     TextInputBuilder,
     TextInputStyle,
 } from 'discord.js';
@@ -125,20 +127,20 @@ export class Help {
 
         const options = {
             Suggestion: {
-                idList: process.env.TrelloSuggestionList,
-                idCardSource: process.env.TrelloSuggestionTemplate,
+                idList: process.env.TRELLO_SUGGESTION_LIST,
+                idCardSource: process.env.TRELLO_SUGGESTION_TEMPLATE,
                 desc: `**Suggested By: ${interaction.user.username}**\n**Feature: ${modalDescription}**${modalImage ? `\n\n**Screenshots: ${modalImage}**` : ''}`,
             },
             Issue: {
-                idList: process.env.TrelloIssueList,
-                idCardSource: process.env.TrelloIssueTemplate,
+                idList: process.env.TRELLO_ISSUE_LIST,
+                idCardSource: process.env.TRELLO_ISSUE_TEMPLATE,
                 desc: `**Reporter: ${interaction.user.username}**\n**Description: ${modalDescription}**${modalImage ? `\n\n**Screenshots: ${modalImage}**` : ''}`,
             },
         };
 
         await axios.post('https://api.trello.com/1/cards', {
-            key: process.env.TrelloApiKey,
-            token: process.env.TrelloToken,
+            key: process.env.TRELLO_API_KEY,
+            token: process.env.TRELLO_TOKEN,
             idList: options[reportType as 'Suggestion' | 'Issue'].idList,
             idCardSource: options[reportType as 'Suggestion' | 'Issue'].idCardSource,
             keepFromSource: 'attachments,checklists,comments,customFields,due,start,labels,members,start,stickers',
@@ -147,8 +149,8 @@ export class Help {
         }).then((res) => {
             interaction.reply({ content: `Your \`${reportType}\` has been logged successfully on the [Trello board!](${res.data.url}), appreciate the feedback, mate! `, ephemeral: true });
 
-            if (process.env.TrelloChannel) {
-                const channel = client.channels.cache.get(process.env.TrelloChannel);
+            if (process.env.TRELLO_CHANNEL) {
+                const channel = client.channels.cache.get(process.env.TRELLO_CHANNEL);
                 if (channel && channel.type === ChannelType.GuildText) channel.send({ content: `New ${reportType}, from ${interaction.user.username}: ${res.data.url}` });
             }
         }).catch((error) => {
