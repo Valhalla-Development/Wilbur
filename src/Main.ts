@@ -20,6 +20,7 @@ export const client = new Client({
         IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMessages, IntentsBitField.Flags.MessageContent,
     ],
     silent: true,
+    botGuilds: process.env.GUILDS ? process.env.GUILDS.split(',') : undefined,
 }) as CustomClient;
 
 /**
