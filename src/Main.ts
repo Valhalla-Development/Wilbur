@@ -5,6 +5,7 @@ import {
 import { Client } from 'discordx';
 import 'dotenv/config';
 import { ClusterClient, getInfo } from 'discord-hybrid-sharding';
+import { handleError } from './utils/Util.js';
 
 interface CustomClient extends Client {
     cluster: ClusterClient<Client>;
@@ -26,34 +27,17 @@ export const client = new Client({
  * @param error - The error that was not handled.
  * @returns void
  */
-process.on('unhandledRejection', (error: Error) => {
-    if (!error?.stack) return;
+process.on('unhandledRejection', async (error) => {
+    await handleError(client, error);
+});
 
-    console.error(error.stack);
-
-    if (process.env.Logging && process.env.Logging.toLowerCase() === 'true') {
-        if (!process.env.LoggingChannel) return;
-
-        const channel = client.channels.cache.get(process.env.LoggingChannel);
-        if (!channel || channel.type !== ChannelType.GuildText) return;
-
-        const typeOfError = error.stack.split(':')[0];
-        const fullError = error.stack.replace(/^[^:]+:/, '').trimStart();
-        const timeOfError = `<t:${Math.floor(new Date().getTime() / 1000)}>`;
-        const fullString = `From: \`${typeOfError}\`\nTime: ${timeOfError}\n\nError:\n${codeBlock('js', fullError)}`;
-
-        function truncateDescription(description: string) {
-            const maxLength = 2048;
-            if (description.length > maxLength) {
-                const numTruncatedChars = description.length - maxLength;
-                return `${description.slice(0, maxLength)}... ${numTruncatedChars} more`;
-            }
-            return description;
-        }
-
-        const embed = new EmbedBuilder().setTitle('Error').setDescription(truncateDescription(fullString));
-        channel.send({ embeds: [embed] });
-    }
+/**
+ * Handles uncaught exception by logging the error and sending an embed to a designated logging channel, if enabled.
+ * @param error - The error that was not handled.
+ * @returns void
+ */
+process.on('uncaughtException', async (error) => {
+    await handleError(client, error);
 });
 
 /**
