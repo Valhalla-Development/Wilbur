@@ -24,32 +24,43 @@ export class InteractionCreate {
         }
 
         // Logging
-        if (process.env.Logging && process.env.Logging.toLowerCase() === 'true') {
+        if (process.env.ENABLE_LOGGING?.toLowerCase() === 'true') {
             if (!interaction.isChatInputCommand()) return;
 
-            const nowInMs = Date.now();
-            const nowInSecond = Math.round(nowInMs / 1000);
+            const reply = await interaction.fetchReply().catch(() => null);
 
-            const logEmbed = new EmbedBuilder().setColor('#e91e63');
+            const link = reply?.guildId && reply?.channelId && reply?.id
+                ? `https://discord.com/channels/${reply.guildId}/${reply.channelId}/${reply.id}`
+                : `<#${interaction.channelId}>`;
+
+            const now = Date.now();
+            const nowInSeconds = Math.floor(now / 1000);
             const executedCommand = interaction.toString();
 
-            // Add fields to the log embed with information about the executed command
-            logEmbed.addFields({
-                name: `Guild: ${interaction.guild.name} | Date: <t:${nowInSecond}>`,
-                value: codeBlock('kotlin', `${interaction.user.tag} just executed the '${interaction.toString()}' command`),
-            });
-
-            // Log the command execution in the console
+            // Console logging
             console.log(
-                `${'◆◆◆◆◆◆'.rainbow.bold} ${moment().format('MMM D, h:mm A')} ${reversedRainbow('◆◆◆◆◆◆')}\n`
-                + `${'🔧 Command:'.brightBlue.bold} ${executedCommand.brightYellow.bold}\n${
-                    `${'🔍 Executor:'.brightBlue.bold} ${interaction.user.displayName.underline.brightMagenta.bold} ${'('.gray.bold}${'Guild: '.brightBlue.bold}${interaction.guild.name.underline.brightMagenta.bold}`.brightBlue.bold}${')'.gray.bold}\n`,
+                `${'◆◆◆◆◆◆'.rainbow.bold} ${moment(now).format('MMM D, h:mm A')} ${reversedRainbow('◆◆◆◆◆◆')}\n`
+                + `${'🔧 Command:'.brightBlue.bold} ${executedCommand.brightYellow.bold}\n`
+                + `${'🔍 Executor:'.brightBlue.bold} ${interaction.user.displayName.underline.brightMagenta.bold} ${'('.gray.bold}${'Guild: '.brightBlue.bold}${interaction.guild.name.underline.brightMagenta.bold}${')'}`,
             );
 
-            // Send the log embed to the designated command logging channel, if specified
-            if (process.env.CommandLogging) {
-                const channel = client.channels.cache.get(process.env.CommandLogging);
-                if (channel && channel.type === ChannelType.GuildText) channel.send({ embeds: [logEmbed] });
+            // Embed logging
+            const logEmbed = new EmbedBuilder()
+                .setColor('#e91e63')
+                .setTitle('Command Executed')
+                .addFields(
+                    { name: '👤 User', value: `${interaction.user}`, inline: true },
+                    { name: '📅 Date', value: `<t:${nowInSeconds}:F>`, inline: true },
+                    { name: '📰 Interaction', value: link, inline: true },
+                    { name: '🖥️ Command', value: codeBlock('kotlin', executedCommand) },
+                );
+
+            // Channel logging
+            if (process.env.COMMAND_LOGGING_CHANNEL) {
+                const channel = client.channels.cache.get(process.env.COMMAND_LOGGING_CHANNEL);
+                if (channel?.type === ChannelType.GuildText) {
+                    channel.send({ embeds: [logEmbed] }).catch(console.error);
+                }
             }
         }
     }
