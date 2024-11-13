@@ -254,7 +254,9 @@ export async function postToReddit(client: Client, cnt: string, author: string) 
 
             console.log(`Posted message "${cnt}" to Reddit.`);
         })
-        .catch((e) => console.error(e));
+        .catch((e) => {
+            console.error('Error posting to Reddit:', e.message, e.response ? e.response.body : e);
+        });
 }
 
 /**
