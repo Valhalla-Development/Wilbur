@@ -199,6 +199,9 @@ export async function getCommandIds(client: Client): Promise<Record<string, stri
 }
 
 export async function postToReddit(client: Client, cnt: string, author: string) {
+    // Remove custom Discord emojis from the content
+    const processedContent = cnt.replace(/<:\w+:\d{17,19}>/g, '');
+
     /**
      * Checks if the required environment variables are defined.
      * Throws an error with a list of missing variables if any are not set.
@@ -244,15 +247,15 @@ export async function postToReddit(client: Client, cnt: string, author: string) 
     await reddit.getSubreddit(process.env.REDDIT_SUBREDDIT_NAME as string)
         .submitSelfpost({
             subredditName: process.env.REDDIT_SUBREDDIT_NAME as string,
-            title: `📣 | ${cnt.length > 50 ? `${cnt.substring(0, 47)}...` : cnt}`,
-            text: `${cnt}\n\nPosted by ${author} in our Discord Community at ${process.env.DISCORD_SUPPORT}\n\nThis is an automated post.`,
+            title: `📣 | ${processedContent.length > 50 ? `${processedContent.substring(0, 47)}...` : processedContent}`,
+            text: `${processedContent}\n\nPosted by ${author} in our Discord Community at ${process.env.DISCORD_SUPPORT}\n\nThis is an automated post.`,
         })
         .then((post) => {
             if (process.env.REDDIT_FLAIR) {
                 post.assignFlair({ text: process.env.REDDIT_FLAIR, cssClass: '' });
             }
 
-            console.log(`Posted message "${cnt}" to Reddit.`);
+            console.log(`Posted message "${processedContent}" to Reddit.`);
         })
         .catch((e) => {
             console.error('Error posting to Reddit:', e.message, e.response ? e.response.body : e);
