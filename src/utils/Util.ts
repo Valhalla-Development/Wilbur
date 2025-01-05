@@ -60,8 +60,8 @@ export function scrambleWord(word: string): string {
         randomIndex = Math.floor(Math.random() * currentIndex);
         currentIndex -= 1;
 
-        temporaryValue = wordArray[currentIndex];
-        wordArray[currentIndex] = wordArray[randomIndex];
+        temporaryValue = wordArray[currentIndex]!;
+        wordArray[currentIndex] = wordArray[randomIndex]!;
         wordArray[randomIndex] = temporaryValue;
     }
 
