@@ -5,7 +5,7 @@ import { dirname } from '@discordx/importer';
 const config = process.env;
 
 const dir = dirname(import.meta.url);
-const manager = new ClusterManager(`${dir}/Main.js`, {
+const manager = new ClusterManager(`${dir}/Main.ts`, {
     totalShards: 1,
     shardsPerClusters: 2,
     totalClusters: 1,
