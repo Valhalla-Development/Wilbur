@@ -168,9 +168,19 @@ export class Scramble {
         const gameId = interaction.customId.match(/scramble_(?:guess|modal)-([a-f0-9-]+)/i)?.[1]; // Extract the gameId from the custom id
         if (!gameId) return;
         const game = activeGames[gameId]; // Get the game state using the gameId
+        
+        if (!game) {
+            await interaction.reply({ content: 'This game no longer exists.', ephemeral: true });
+            return;
+        }
 
         const [modalField] = ['modalField'].map((id) => interaction.fields.getTextInputValue(id));
 
+        if (!modalField) {
+            await interaction.reply({ content: 'No answer provided.', ephemeral: true });
+            return;
+        }
+        
         if (game.gameIsActive) {
             if (modalField.toLowerCase() === game.originalWord.toLowerCase()) {
                 game.gameIsActive = false;
