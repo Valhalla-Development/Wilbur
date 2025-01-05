@@ -1,7 +1,7 @@
 import {
     ChannelType,
     codeBlock,
-    ColorResolvable,
+    type ColorResolvable,
     EmbedBuilder,
     Message,
     PermissionsBitField,
