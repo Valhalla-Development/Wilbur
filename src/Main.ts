@@ -3,11 +3,12 @@ import { IntentsBitField } from 'discord.js';
 import { Client } from 'discordx';
 import 'dotenv/config';
 import { ClusterClient, getInfo } from 'discord-hybrid-sharding';
-import { handleError } from './utils/Util.js';
+import { handleError } from './utils/Util.ts';
 
 interface CustomClient extends Client {
     cluster: ClusterClient<Client>;
 }
+
 /**
  * The Discord.js client instance.
  */

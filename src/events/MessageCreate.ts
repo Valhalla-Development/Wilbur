@@ -1,6 +1,6 @@
 import type { ArgsOf, Client } from 'discordx';
 import { Discord, On } from 'discordx';
-import { postToReddit } from '../utils/Util.js';
+import { postToReddit } from '../utils/Util.ts';
 
 @Discord()
 export class MessageCreate {

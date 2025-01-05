@@ -16,7 +16,7 @@ import {
     TextInputStyle,
 } from 'discord.js';
 import axios from 'axios';
-import { capitalise, getCommandIds } from '../utils/Util.js';
+import { capitalise, getCommandIds } from '../utils/Util.ts';
 
 @Discord()
 export class Help {

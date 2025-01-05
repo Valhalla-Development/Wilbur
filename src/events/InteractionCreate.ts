@@ -2,7 +2,7 @@ import type { ArgsOf, Client } from 'discordx';
 import { Discord, On } from 'discordx';
 import { ChannelType, codeBlock, EmbedBuilder } from 'discord.js';
 import moment from 'moment';
-import { reversedRainbow } from '../utils/Util.js';
+import { reversedRainbow } from '../utils/Util.ts';
 
 @Discord()
 export class InteractionCreate {

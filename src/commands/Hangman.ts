@@ -4,7 +4,7 @@ import {
     AttachmentBuilder, ChannelType, Message, PermissionsBitField, ThreadChannel,
 } from 'discord.js';
 import axios from 'axios';
-import { deletableCheck, getRandomWord, messageDelete } from '../utils/Util.js';
+import { deletableCheck, getRandomWord, messageDelete } from '../utils/Util.ts';
 
 const cooldown = new Map();
 const cooldownSeconds = 1;
