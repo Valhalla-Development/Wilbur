@@ -1,22 +1,21 @@
 import {
     ActionRowBuilder,
     ButtonBuilder,
-    EmbedBuilder,
-    CommandInteraction,
     ButtonInteraction,
     ButtonStyle,
+    ChannelType,
+    CommandInteraction,
+    EmbedBuilder,
     ModalBuilder,
+    ModalSubmitInteraction,
     TextInputBuilder,
     TextInputStyle,
-    ModalSubmitInteraction, ChannelType,
 } from 'discord.js';
 import {
-    Discord, Slash, ButtonComponent, ModalComponent,
+    ButtonComponent, Discord, ModalComponent, Slash,
 } from 'discordx';
 import { v4 as uuidv4 } from 'uuid';
-import {
-    color, fetchAndScrambleWord, capitalise,
-} from '../utils/Util.js';
+import { capitalise, color, fetchAndScrambleWord } from '../utils/Util.ts';
 
 class Game {
     gameIsActive: boolean;
