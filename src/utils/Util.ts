@@ -198,7 +198,7 @@ export async function getCommandIds(client: Client): Promise<Record<string, stri
     }
 }
 
-export async function postToReddit(client: Client, cnt: string, author: string) {
+export async function postToReddit(client: Client, cnt: string, author: string, imageUrl?: string) {
     // Remove custom Discord emojis from the content
     const processedContent = cnt.replace(/<:\w+:\d{17,19}>/g, '');
 
@@ -244,6 +244,27 @@ export async function postToReddit(client: Client, cnt: string, author: string) 
         password: process.env.REDDIT_PASSWORD as string,
     });
 
+    // If an image is provided, post it as a link post
+    if (imageUrl) {
+        await reddit.getSubreddit(process.env.REDDIT_SUBREDDIT_NAME as string)
+            .submitLink({
+                subredditName: process.env.REDDIT_SUBREDDIT_NAME as string,
+                title: `📣 | ${processedContent.length > 50 ? `${processedContent.substring(0, 47)}...` : processedContent}`,
+                url: imageUrl,
+            })
+            .then((post) => {
+                if (process.env.REDDIT_FLAIR) {
+                    post.assignFlair({ text: process.env.REDDIT_FLAIR, cssClass: '' });
+                }
+                console.log(`Posted image "${imageUrl}" to Reddit.`);
+            })
+            .catch((e) => {
+                console.error('Error posting image to Reddit:', e.message, e.response ? e.response.body : e);
+            });
+        return;
+    }
+
+    // Fallback to submitting a self (text) post if no imageUrl is provided
     await reddit.getSubreddit(process.env.REDDIT_SUBREDDIT_NAME as string)
         .submitSelfpost({
             subredditName: process.env.REDDIT_SUBREDDIT_NAME as string,
