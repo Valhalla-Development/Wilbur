@@ -200,7 +200,7 @@ export async function getCommandIds(client: Client): Promise<Record<string, stri
 
 export async function postToReddit(client: Client, cnt: string, author: string, imageUrl?: string) {
     // Remove custom Discord emojis from the content
-    const processedContent = cnt.replace(/<:\w+:\d{17,19}>/g, '');
+    const processedContent = cnt.replace(/<a?:\w+:\d{17,19}>/g, '');
 
     /**
      * Checks if the required environment variables are defined.
