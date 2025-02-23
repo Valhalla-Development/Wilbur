@@ -1,6 +1,6 @@
 {
   "name": "wilbur",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A fun Discord Bot",
   "license": "GPL-3.0-or-later",
   "author": "Ragnar Lothbrok <ragnarlothbrokjr@proton.me>",
@@ -9,8 +9,6 @@
   "bugs": {
     "url": "https://github.com/Valhalla-Development/Wilbur/issues"
   },
-  "type": "module",
-  "main": "src/Cluster.ts",
   "scripts": {
     "lint": "tsc --noEmit -p tsconfig.json && biome check --files-ignore-unknown=true --diagnostic-level=error --no-errors-on-unmatched src",
     "lint:fix": "biome check --write --no-errors-on-unmatched --files-ignore-unknown=true src",
