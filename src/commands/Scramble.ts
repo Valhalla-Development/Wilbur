@@ -1,19 +1,17 @@
 import {
     ActionRowBuilder,
     ButtonBuilder,
-    ButtonInteraction,
+    type ButtonInteraction,
     ButtonStyle,
     ChannelType,
-    CommandInteraction,
+    type CommandInteraction,
     EmbedBuilder,
     ModalBuilder,
-    ModalSubmitInteraction,
+    type ModalSubmitInteraction,
     TextInputBuilder,
     TextInputStyle,
 } from 'discord.js';
-import {
-    ButtonComponent, Discord, ModalComponent, Slash,
-} from 'discordx';
+import { ButtonComponent, Discord, ModalComponent, Slash } from 'discordx';
 import { v4 as uuidv4 } from 'uuid';
 import { capitalise, color, fetchAndScrambleWord } from '../utils/Util.ts';
 
@@ -47,7 +45,9 @@ export class Scramble {
     private createScrambleEmbed(game: Game): EmbedBuilder {
         return new EmbedBuilder()
             .setTitle('Scramble Word')
-            .setDescription(`The scrambled word is: ${game.scrambledWord.toLowerCase()}. Can you unscramble it?`)
+            .setDescription(
+                `The scrambled word is: ${game.scrambledWord.toLowerCase()}. Can you unscramble it?`
+            )
             .setColor('#ffffff');
     }
 
@@ -61,7 +61,7 @@ export class Scramble {
             new ButtonBuilder()
                 .setCustomId(`scramble_guess-${gameId}`)
                 .setLabel('Answer')
-                .setStyle(ButtonStyle.Success),
+                .setStyle(ButtonStyle.Success)
         );
     }
 
@@ -71,7 +71,9 @@ export class Scramble {
      */
     @Slash({ description: 'Unscramble a jumbled word in this fun and challenging game' })
     async scramble(interaction: CommandInteraction) {
-        if (!interaction.channel || interaction.channel.type !== ChannelType.GuildText) return;
+        if (!interaction.channel || interaction.channel.type !== ChannelType.GuildText) {
+            return;
+        }
         await interaction.deferReply({ ephemeral: true });
 
         const game = new Game();
@@ -79,9 +81,8 @@ export class Scramble {
         activeGames[gameId] = game; // Store the game state in the activeGames object
 
         try {
-            const {
-                originalWord, scrambledWord, pronunciation, partOfSpeech, fieldArray,
-            } = await fetchAndScrambleWord();
+            const { originalWord, scrambledWord, pronunciation, partOfSpeech, fieldArray } =
+                await fetchAndScrambleWord();
             game.originalWord = originalWord;
             game.scrambledWord = scrambledWord;
             game.pronunciation = pronunciation;
@@ -94,47 +95,66 @@ export class Scramble {
             const initial = await interaction.channel.send({ embeds: [embed], components: [row] });
             await interaction.deleteReply();
 
-            setTimeout(async () => {
-                if (game.gameIsActive) {
-                    const timeOut = new EmbedBuilder()
-                        .setColor(color(`${interaction.guild?.members.me?.displayHexColor}`))
-                        .setAuthor({
-                            name: 'Scramble Word',
-                            url: `https://wordnik.com/words/${game.originalWord}`,
-                            iconURL: `${interaction.guild?.iconURL({ extension: 'png' })}`,
-                        })
-                        .setDescription(`Blimey, no one managed to guess the scrambled word **(${game.scrambledWord.toLowerCase()})**. Here's the answer: \n\n>>> ${capitalise(`**${game.originalWord}`)}**${`\n*${game.partOfSpeech}*`}${`\n*[ ${game.pronunciation} ]*`}`);
+            setTimeout(
+                async () => {
+                    if (game.gameIsActive) {
+                        const timeOut = new EmbedBuilder()
+                            .setColor(color(`${interaction.guild?.members.me?.displayHexColor}`))
+                            .setAuthor({
+                                name: 'Scramble Word',
+                                url: `https://wordnik.com/words/${game.originalWord}`,
+                                iconURL: `${interaction.guild?.iconURL({ extension: 'png' })}`,
+                            })
+                            .setDescription(
+                                `Blimey, no one managed to guess the scrambled word **(${game.scrambledWord.toLowerCase()})**. Here's the answer: \n\n>>> ${capitalise(`**${game.originalWord}`)}**${`\n*${game.partOfSpeech}*`}${`\n*[ ${game.pronunciation} ]*`}`
+                            );
 
-                    if (game.fieldArray.length) timeOut.addFields(...game.fieldArray);
+                        if (game.fieldArray.length) {
+                            timeOut.addFields(...game.fieldArray);
+                        }
 
-                    const oldEmbed = new EmbedBuilder()
-                        .setColor(color(`${interaction.guild?.members.me?.displayHexColor}`))
-                        .setAuthor({
-                            name: 'Scramble Word',
-                            url: `https://wordnik.com/words/${game.originalWord}`,
-                            iconURL: `${interaction.guild?.iconURL({ extension: 'png' })}`,
+                        const oldEmbed = new EmbedBuilder()
+                            .setColor(color(`${interaction.guild?.members.me?.displayHexColor}`))
+                            .setAuthor({
+                                name: 'Scramble Word',
+                                url: `https://wordnik.com/words/${game.originalWord}`,
+                                iconURL: `${interaction.guild?.iconURL({ extension: 'png' })}`,
+                            });
+
+                        const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
+                            new ButtonBuilder()
+                                .setCustomId('scramble_guess')
+                                .setLabel('Answer')
+                                .setStyle(ButtonStyle.Success)
+                                .setDisabled(true)
+                        );
+
+                        // Game has ended
+                        if (
+                            !interaction.channel ||
+                            interaction.channel.type !== ChannelType.GuildText
+                        ) {
+                            return;
+                        }
+
+                        const newMessage = await interaction.channel?.send({
+                            embeds: [timeOut],
+                            components: [buttonRow],
                         });
 
-                    const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
-                        new ButtonBuilder()
-                            .setCustomId('scramble_guess')
-                            .setLabel('Answer')
-                            .setStyle(ButtonStyle.Success)
-                            .setDisabled(true),
-                    );
-
-                    // Game has ended
-                    if (!interaction.channel || interaction.channel.type !== ChannelType.GuildText) return;
-
-                    const newMessage = await interaction.channel?.send({ embeds: [timeOut], components: [buttonRow] });
-
-                    oldEmbed.setDescription(`This game has ended. See: https://discord.com/channels/${interaction.guild?.id}/${interaction.channel?.id}/${newMessage?.id}`);
-                    await initial.edit({ embeds: [oldEmbed], components: [buttonRow] });
-                }
-            }, 10 * 60 * 1000); // 10 minutes
+                        oldEmbed.setDescription(
+                            `This game has ended. See: https://discord.com/channels/${interaction.guild?.id}/${interaction.channel?.id}/${newMessage?.id}`
+                        );
+                        await initial.edit({ embeds: [oldEmbed], components: [buttonRow] });
+                    }
+                },
+                10 * 60 * 1000
+            ); // 10 minutes
         } catch (error) {
             console.error(error);
-            await interaction.channel.send('Sorry mate, we\'re having trouble fetching the word right now. Could you please try again later?');
+            await interaction.channel.send(
+                "Sorry mate, we're having trouble fetching the word right now. Could you please try again later?"
+            );
         }
     }
 
@@ -146,7 +166,9 @@ export class Scramble {
     async buttonClicked(interaction: ButtonInteraction) {
         const gameId = interaction.customId.match(/scramble_(?:guess|modal)-([a-f0-9-]+)/i)?.[1]; // Extract the gameId from the custom id
 
-        const modal = new ModalBuilder().setTitle('Scramble Word').setCustomId(`scramble_modal-${gameId}`);
+        const modal = new ModalBuilder()
+            .setTitle('Scramble Word')
+            .setCustomId(`scramble_modal-${gameId}`);
         const input = new TextInputBuilder()
             .setCustomId('modalField')
             .setLabel('Input')
@@ -166,9 +188,11 @@ export class Scramble {
     @ModalComponent({ id: /^scramble_modal-/ })
     async handleModalSubmit(interaction: ModalSubmitInteraction): Promise<void> {
         const gameId = interaction.customId.match(/scramble_(?:guess|modal)-([a-f0-9-]+)/i)?.[1]; // Extract the gameId from the custom id
-        if (!gameId) return;
+        if (!gameId) {
+            return;
+        }
         const game = activeGames[gameId]; // Get the game state using the gameId
-        
+
         if (!game) {
             await interaction.reply({ content: 'This game no longer exists.', ephemeral: true });
             return;
@@ -180,7 +204,7 @@ export class Scramble {
             await interaction.reply({ content: 'No answer provided.', ephemeral: true });
             return;
         }
-        
+
         if (game.gameIsActive) {
             if (modalField.toLowerCase() === game.originalWord.toLowerCase()) {
                 game.gameIsActive = false;
@@ -192,9 +216,13 @@ export class Scramble {
                         url: `https://wordnik.com/words/${game.originalWord}`,
                         iconURL: `${interaction.guild?.iconURL({ extension: 'png' })}`,
                     })
-                    .setDescription(`Well done, ${interaction.member} you managed to guess the scrambled word **(${game.scrambledWord.toLowerCase()})**\n\n>>> ${capitalise(`**${game.originalWord}`)}**${`\n*${game.partOfSpeech}*`}${`\n*[ ${game.pronunciation} ]*`}`);
+                    .setDescription(
+                        `Well done, ${interaction.member} you managed to guess the scrambled word **(${game.scrambledWord.toLowerCase()})**\n\n>>> ${capitalise(`**${game.originalWord}`)}**${`\n*${game.partOfSpeech}*`}${`\n*[ ${game.pronunciation} ]*`}`
+                    );
 
-                if (game.fieldArray.length) successEmbed.addFields(...game.fieldArray);
+                if (game.fieldArray.length) {
+                    successEmbed.addFields(...game.fieldArray);
+                }
 
                 const oldEmbed = new EmbedBuilder()
                     .setColor(color(`${interaction.guild?.members.me?.displayHexColor}`))
@@ -209,21 +237,35 @@ export class Scramble {
                         .setCustomId('scramble_guess')
                         .setLabel('Answer')
                         .setStyle(ButtonStyle.Success)
-                        .setDisabled(true),
+                        .setDisabled(true)
                 );
 
-                if (!interaction.isFromMessage()) return;
-                if (!interaction.channel || interaction.channel.type !== ChannelType.GuildText) return;
+                if (!interaction.isFromMessage()) {
+                    return;
+                }
+                if (!interaction.channel || interaction.channel.type !== ChannelType.GuildText) {
+                    return;
+                }
 
-                const newMessage = await interaction.channel?.send({ embeds: [successEmbed], components: [row] });
+                const newMessage = await interaction.channel?.send({
+                    embeds: [successEmbed],
+                    components: [row],
+                });
 
-                oldEmbed.setDescription(`This game has ended. See: https://discord.com/channels/${interaction.guild?.id}/${interaction.channel?.id}/${newMessage?.id}`);
+                oldEmbed.setDescription(
+                    `This game has ended. See: https://discord.com/channels/${interaction.guild?.id}/${interaction.channel?.id}/${newMessage?.id}`
+                );
                 await interaction.update({ embeds: [oldEmbed], components: [row] });
             } else {
-                await interaction.reply({ content: `${interaction.member} incorrectly guessed **${modalField}**` });
+                await interaction.reply({
+                    content: `${interaction.member} incorrectly guessed **${modalField}**`,
+                });
             }
         } else {
-            await interaction.reply({ content: 'This game has already ended. Better luck next time!', ephemeral: true });
+            await interaction.reply({
+                content: 'This game has already ended. Better luck next time!',
+                ephemeral: true,
+            });
         }
     }
 }

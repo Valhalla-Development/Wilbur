@@ -1,6 +1,6 @@
+import { ChannelType, EmbedBuilder, codeBlock } from 'discord.js';
 import type { ArgsOf, Client } from 'discordx';
 import { Discord, On } from 'discordx';
-import { ChannelType, codeBlock, EmbedBuilder } from 'discord.js';
 import moment from 'moment';
 import { reversedRainbow } from '../utils/Util.ts';
 
@@ -14,8 +14,16 @@ export class InteractionCreate {
     @On({ event: 'interactionCreate' })
     async onInteraction([interaction]: ArgsOf<'interactionCreate'>, client: Client) {
         // Check if the interaction is in a guild and in a guild text channel, and is either a string select menu or a chat input command.
-        if (!interaction.guild || !interaction.channel || interaction.channel.type !== ChannelType.GuildText
-            || (!interaction.isChatInputCommand() && !interaction.isModalSubmit() && !interaction.isButton())) return;
+        if (
+            !interaction.guild ||
+            !interaction.channel ||
+            interaction.channel.type !== ChannelType.GuildText ||
+            (!interaction.isChatInputCommand() &&
+                !interaction.isModalSubmit() &&
+                !interaction.isButton())
+        ) {
+            return;
+        }
 
         try {
             await client.executeInteraction(interaction);
@@ -25,13 +33,16 @@ export class InteractionCreate {
 
         // Logging
         if (process.env.ENABLE_LOGGING?.toLowerCase() === 'true') {
-            if (!interaction.isChatInputCommand()) return;
+            if (!interaction.isChatInputCommand()) {
+                return;
+            }
 
             const reply = await interaction.fetchReply().catch(() => null);
 
-            const link = reply?.guildId && reply?.channelId && reply?.id
-                ? `https://discord.com/channels/${reply.guildId}/${reply.channelId}/${reply.id}`
-                : `<#${interaction.channelId}>`;
+            const link =
+                reply?.guildId && reply?.channelId && reply?.id
+                    ? `https://discord.com/channels/${reply.guildId}/${reply.channelId}/${reply.id}`
+                    : `<#${interaction.channelId}>`;
 
             const now = Date.now();
             const nowInSeconds = Math.floor(now / 1000);
@@ -39,9 +50,9 @@ export class InteractionCreate {
 
             // Console logging
             console.log(
-                `${'◆◆◆◆◆◆'.rainbow.bold} ${moment(now).format('MMM D, h:mm A')} ${reversedRainbow('◆◆◆◆◆◆')}\n`
-                + `${'🔧 Command:'.brightBlue.bold} ${executedCommand.brightYellow.bold}\n`
-                + `${'🔍 Executor:'.brightBlue.bold} ${interaction.user.displayName.underline.brightMagenta.bold} ${'('.gray.bold}${'Guild: '.brightBlue.bold}${interaction.guild.name.underline.brightMagenta.bold}${')'}`,
+                `${'◆◆◆◆◆◆'.rainbow.bold} ${moment(now).format('MMM D, h:mm A')} ${reversedRainbow('◆◆◆◆◆◆')}\n` +
+                    `${'🔧 Command:'.brightBlue.bold} ${executedCommand.brightYellow.bold}\n` +
+                    `${'🔍 Executor:'.brightBlue.bold} ${interaction.user.displayName.underline.brightMagenta.bold} ${'('.gray.bold}${'Guild: '.brightBlue.bold}${interaction.guild.name.underline.brightMagenta.bold}${')'}`
             );
 
             // Embed logging
@@ -52,7 +63,7 @@ export class InteractionCreate {
                     { name: '👤 User', value: `${interaction.user}`, inline: true },
                     { name: '📅 Date', value: `<t:${nowInSeconds}:F>`, inline: true },
                     { name: '📰 Interaction', value: link, inline: true },
-                    { name: '🖥️ Command', value: codeBlock('kotlin', executedCommand) },
+                    { name: '🖥️ Command', value: codeBlock('kotlin', executedCommand) }
                 );
 
             // Channel logging

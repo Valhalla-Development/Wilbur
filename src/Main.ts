@@ -16,7 +16,9 @@ export const client = new Client({
     shards: getInfo().SHARD_LIST,
     shardCount: getInfo().TOTAL_SHARDS,
     intents: [
-        IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMessages, IntentsBitField.Flags.MessageContent,
+        IntentsBitField.Flags.Guilds,
+        IntentsBitField.Flags.GuildMessages,
+        IntentsBitField.Flags.MessageContent,
     ],
     silent: true,
     botGuilds: process.env.GUILDS ? process.env.GUILDS.split(',') : undefined,
@@ -59,39 +61,44 @@ client.on('error', async (error: unknown) => {
 async function run() {
     const missingVar = (v: string) => `Oi mate, the ${v} environment variable is missing!`;
     const invalidBool = (v: string) => `Either set the '${v}' value to true or false, mate.`;
-    const invalidLoggingChannels = 'Oi, if you\'re setting logging to true, make sure to pass both LOGGING_CHANNEL and COMMAND_LOGGING_CHANNEL along with it, mate!';
-    const invalidValhallaConfig = 'Blimey, you need both VALHALLA_API_URI and VALHALLA_API_KEY for the Valhalla integration to work!';
+    const invalidLoggingChannels =
+        "Oi, if you're setting logging to true, make sure to pass both LOGGING_CHANNEL and COMMAND_LOGGING_CHANNEL along with it, mate!";
+    const invalidValhallaConfig =
+        'Blimey, you need both VALHALLA_API_URI and VALHALLA_API_KEY for the Valhalla integration to work!';
 
     // Required variables that must be present
-    const required = [
-        'BOT_TOKEN',
-        'VALHALLA_API_URI',
-        'VALHALLA_API_KEY',
-    ];
+    const required = ['BOT_TOKEN', 'VALHALLA_API_URI', 'VALHALLA_API_KEY'];
 
     // Variables that must be boolean (true/false)
-    const booleans = [
-        'ENABLE_LOGGING',
-        'REDDIT_POST',
-    ];
+    const booleans = ['ENABLE_LOGGING', 'REDDIT_POST'];
 
     // Check all required variables
-    required.forEach((v) => {
-        if (!process.env[v]) throw new Error(missingVar(v));
-    });
+    for (const v of required) {
+        if (!process.env[v]) {
+            throw new Error(missingVar(v));
+        }
+    }
 
     // Validate boolean values
-    booleans.forEach((v) => {
-        if (process.env[v] !== 'true' && process.env[v] !== 'false') throw new Error(invalidBool(v));
-    });
+    for (const v of booleans) {
+        if (process.env[v] !== 'true' && process.env[v] !== 'false') {
+            throw new Error(invalidBool(v));
+        }
+    }
 
     // Special validation for logging channels when logging is enabled
-    if (process.env.ENABLE_LOGGING === 'true' && (!process.env.LOGGING_CHANNEL || !process.env.COMMAND_LOGGING_CHANNEL)) {
+    if (
+        process.env.ENABLE_LOGGING === 'true' &&
+        (!process.env.LOGGING_CHANNEL || !process.env.COMMAND_LOGGING_CHANNEL)
+    ) {
         throw new Error(invalidLoggingChannels);
     }
 
     // Special validation for Valhalla API (since both URI and key are needed together)
-    if ((process.env.VALHALLA_API_URI && !process.env.VALHALLA_API_KEY) || (!process.env.VALHALLA_API_URI && process.env.VALHALLA_API_KEY)) {
+    if (
+        (process.env.VALHALLA_API_URI && !process.env.VALHALLA_API_KEY) ||
+        (!process.env.VALHALLA_API_URI && process.env.VALHALLA_API_KEY)
+    ) {
         throw new Error(invalidValhallaConfig);
     }
 
@@ -106,9 +113,11 @@ async function run() {
             'REDDIT_PASSWORD',
         ];
 
-        requiredRedditVars.forEach((v) => {
-            if (!process.env[v]) throw new Error(`Oi mate, when REDDIT_POST is true, ${v} is required!`);
-        });
+        for (const v of requiredRedditVars) {
+            if (!process.env[v]) {
+                throw new Error(`Oi mate, when REDDIT_POST is true, ${v} is required!`);
+            }
+        }
     }
 
     /**
@@ -116,9 +125,10 @@ async function run() {
      * @param ms - The time in milliseconds to delay the execution of the function.
      * @returns A promise that resolves after the specified time has passed.
      */
-    const sleep = (ms: number): Promise<void> => new Promise<void>((resolve) => {
-        setTimeout(resolve, ms);
-    });
+    const sleep = (ms: number): Promise<void> =>
+        new Promise<void>((resolve) => {
+            setTimeout(resolve, ms);
+        });
     const time = 200;
 
     /**

@@ -1,13 +1,13 @@
 import {
     ChannelType,
-    codeBlock,
     type ColorResolvable,
     EmbedBuilder,
-    Message,
+    type Message,
     PermissionsBitField,
-    TextChannel,
+    type TextChannel,
+    codeBlock,
 } from 'discord.js';
-import { Client } from 'discordx';
+import type { Client } from 'discordx';
 import '@colors/colors';
 import axios from 'axios';
 import Snoowrap from 'snoowrap';
@@ -111,7 +111,10 @@ export async function fetchAndScrambleWord(): Promise<{
             fieldArray,
         };
     } catch (error) {
-        console.error('Oopsie daisy! Looks like there\'s been an error trying to fetch the word, mate:', error);
+        console.error(
+            "Oopsie daisy! Looks like there's been an error trying to fetch the word, mate:",
+            error
+        );
         throw error;
     }
 }
@@ -151,7 +154,8 @@ export async function getRandomWord(): Promise<string | null> {
  * @returns A Promise that resolves when the message is deleted, or rejects if the message could not be deleted.
  * @throws TypeError if the `message` parameter is not a valid Message object.
  */
-export async function messageDelete(message: Message, time: number): Promise<void> { // todo test
+export async function messageDelete(message: Message, time: number): Promise<void> {
+    // todo test
     try {
         // Check if the bot has the Manage Messages permission
         const botMember = message.guild?.members.cache.get(message.client.user.id);
@@ -173,7 +177,9 @@ export async function messageDelete(message: Message, time: number): Promise<voi
         }
     } catch (error) {
         // Handle any errors that occur during message deletion
-        console.error(`Uh-oh, there's been an error trying to delete the message, mate. Here's the message: ${error}`);
+        console.error(
+            `Uh-oh, there's been an error trying to delete the message, mate. Here's the message: ${error}`
+        );
         throw error;
     }
 }
@@ -246,7 +252,8 @@ export async function postToReddit(client: Client, cnt: string, author: string, 
 
     // If an image is provided, post it as a link post
     if (imageUrl) {
-        await reddit.getSubreddit(process.env.REDDIT_SUBREDDIT_NAME as string)
+        await reddit
+            .getSubreddit(process.env.REDDIT_SUBREDDIT_NAME as string)
             .submitLink({
                 subredditName: process.env.REDDIT_SUBREDDIT_NAME as string,
                 title: `📣 | ${processedContent.length > 50 ? `${processedContent.substring(0, 47)}...` : processedContent}`,
@@ -259,13 +266,18 @@ export async function postToReddit(client: Client, cnt: string, author: string, 
                 console.log(`Posted image "${imageUrl}" to Reddit.`);
             })
             .catch((e) => {
-                console.error('Error posting image to Reddit:', e.message, e.response ? e.response.body : e);
+                console.error(
+                    'Error posting image to Reddit:',
+                    e.message,
+                    e.response ? e.response.body : e
+                );
             });
         return;
     }
 
     // Fallback to submitting a self (text) post if no imageUrl is provided
-    await reddit.getSubreddit(process.env.REDDIT_SUBREDDIT_NAME as string)
+    await reddit
+        .getSubreddit(process.env.REDDIT_SUBREDDIT_NAME as string)
         .submitSelfpost({
             subredditName: process.env.REDDIT_SUBREDDIT_NAME as string,
             title: `📣 | ${processedContent.length > 50 ? `${processedContent.substring(0, 47)}...` : processedContent}`,
@@ -307,11 +319,13 @@ export async function handleError(client: Client, error: unknown): Promise<void>
 
     // Create an error object if we received something else
     const normalizedError = error instanceof Error ? error : new Error(String(error));
-    
+
     // Ensure we have a stack trace
     const errorStack = normalizedError.stack || normalizedError.message || String(error);
 
-    if (process.env.ENABLE_LOGGING?.toLowerCase() !== 'true' || !process.env.LOGGING_CHANNEL) return;
+    if (process.env.ENABLE_LOGGING?.toLowerCase() !== 'true' || !process.env.LOGGING_CHANNEL) {
+        return;
+    }
 
     /**
      * Truncates the description if it exceeds the maximum length.
@@ -320,14 +334,18 @@ export async function handleError(client: Client, error: unknown): Promise<void>
      */
     function truncateDescription(description: string): string {
         const maxLength = 4096;
-        if (description.length <= maxLength) return description;
+        if (description.length <= maxLength) {
+            return description;
+        }
 
         const numTruncatedChars = description.length - maxLength;
         return `${description.slice(0, maxLength)}... ${numTruncatedChars} more`;
     }
 
     try {
-        const channel = client.channels.cache.get(process.env.LOGGING_CHANNEL) as TextChannel | undefined;
+        const channel = client.channels.cache.get(process.env.LOGGING_CHANNEL) as
+            | TextChannel
+            | undefined;
 
         if (!channel || channel.type !== ChannelType.GuildText) {
             console.error(`Invalid logging channel: ${process.env.LOGGING_CHANNEL}`);

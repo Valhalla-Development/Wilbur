@@ -13,5 +13,7 @@ const manager = new ClusterManager(`${dir}/Main.ts`, {
     token: config.TOKEN,
 });
 
-manager.on('clusterCreate', (cluster) => console.log(`Cluster ${cluster.id} is off to the races, mate! Let's gooo!`));
+manager.on('clusterCreate', (cluster) =>
+    console.log(`Cluster ${cluster.id} is off to the races, mate! Let's gooo!`)
+);
 await manager.spawn({ timeout: -1 });
