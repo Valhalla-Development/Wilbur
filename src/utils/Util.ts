@@ -99,7 +99,7 @@ export async function fetchAndScrambleWord(): Promise<{
         const { definition } = data;
         const { pronunciation } = data;
 
-        const fieldArray = [];
+        const fieldArray: { name: string; value: string }[] = [];
         fieldArray.push({ name: '**Definition:**', value: `>>> *${definition.join('\n')}*` });
 
         return {
