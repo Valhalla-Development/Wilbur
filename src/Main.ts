@@ -34,7 +34,7 @@ const clientConfig = {
         IntentsBitField.Flags.MessageContent,
     ],
     silent: true,
-    botGuilds: process.env.GUILDS ? process.env.GUILDS.split(',') : undefined,
+    botGuilds: config.GUILDS,
     ...(isDev
         ? {}
         : {
