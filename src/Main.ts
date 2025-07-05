@@ -77,59 +77,8 @@ client.on('error', async (error: unknown) => {
  * Runs the bot by loading the required components and logging in the client.
  * @async
  * @returns A Promise that resolves with void when the bot is started.
- * @throws An Error if any required environment variables are missing or invalid.
  */
 async function run() {
-    const missingVar = (v: string) => `Oi mate, the ${v} environment variable is missing!`;
-    const invalidBool = (v: string) => `Either set the '${v}' value to true or false, mate.`;
-    const invalidValhallaConfig =
-        'Blimey, you need both VALHALLA_API_URI and VALHALLA_API_KEY for the Valhalla integration to work!';
-
-    // Required variables that must be present
-    const required = ['BOT_TOKEN', 'VALHALLA_API_URI', 'VALHALLA_API_KEY'];
-
-    // Variables that must be boolean (true/false)
-    const booleans = ['ENABLE_LOGGING', 'REDDIT_POST'];
-
-    // Check all required variables
-    for (const v of required) {
-        if (!process.env[v]) {
-            throw new Error(missingVar(v));
-        }
-    }
-
-    // Validate boolean values
-    for (const v of booleans) {
-        if (process.env[v] !== 'true' && process.env[v] !== 'false') {
-            throw new Error(invalidBool(v));
-        }
-    }
-
-    // Special validation for Valhalla API (since both URI and key are needed together)
-    if (
-        (process.env.VALHALLA_API_URI && !process.env.VALHALLA_API_KEY) ||
-        (!process.env.VALHALLA_API_URI && process.env.VALHALLA_API_KEY)
-    ) {
-        throw new Error(invalidValhallaConfig);
-    }
-
-    // Reddit configuration validation (if Reddit posting is enabled)
-    if (process.env.REDDIT_POST === 'true') {
-        const requiredRedditVars = [
-            'DISCORD_CHANNEL_ID',
-            'REDDIT_SUBREDDIT_NAME',
-            'REDDIT_CLIENT_ID',
-            'REDDIT_CLIENT_SECRET',
-            'REDDIT_USERNAME',
-            'REDDIT_PASSWORD',
-        ];
-
-        for (const v of requiredRedditVars) {
-            if (!process.env[v]) {
-                throw new Error(`Oi mate, when REDDIT_POST is true, ${v} is required!`);
-            }
-        }
-    }
 
     /**
      * Delays the execution of the function for a specified time in milliseconds.
