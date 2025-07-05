@@ -12,28 +12,29 @@
   "scripts": {
     "lint": "tsc --noEmit -p tsconfig.json && biome check --files-ignore-unknown=true --diagnostic-level=error --no-errors-on-unmatched src",
     "lint:fix": "biome check --write --no-errors-on-unmatched --files-ignore-unknown=true src",
-    "dev": "bun --watch src/Cluster.ts",
-    "start": "bun src/Cluster.ts",
+    "dev": "NODE_ENV=development bun --watch src/Main.ts",
+    "start": "NODE_ENV=production bun src/Cluster.ts",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@colors/colors": "^1.6.0",
-    "@discordx/importer": "^1.3.1",
-    "@discordx/utilities": "^7.0.3",
-    "axios": "^1.7.9",
-    "discord-hybrid-sharding": "^2.2.4",
-    "discord.js": "^14.18.0",
-    "discordx": "^11.12.2",
-    "dotenv": "^16.4.7",
+    "@discordx/importer": "^1.3.3",
+    "@discordx/utilities": "^7.0.5",
+    "axios": "^1.10.0",
+    "discord-hybrid-sharding": "^2.2.6",
+    "discord.js": "^14.21.0",
+    "discordx": "^11.12.5",
+    "dotenv": "^17.0.1",
     "moment": "^2.30.1",
     "snoowrap": "^1.23.0",
-    "systeminformation": "^5.25.11",
-    "uuid": "^11.1.0"
+    "systeminformation": "^5.27.7",
+    "uuid": "^11.1.0",
+    "zod": "^3.25.74"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
+    "@biomejs/biome": "^2.0.6",
     "@types/uuid": "^10.0.0",
-    "typescript": "^5.7.3",
-    "ultracite": "^4.1.20"
+    "typescript": "^5.8.3",
+    "ultracite": "^5.0.32"
   }
 }
