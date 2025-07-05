@@ -38,7 +38,7 @@ try {
     
     // Validate logging channels required when logging is enabled
     if (config.ENABLE_LOGGING && !config.ERROR_LOGGING_CHANNEL && !config.COMMAND_LOGGING_CHANNEL) {
-        console.warn('⚠️  ENABLE_LOGGING is true but ERROR_LOGGING_CHANNEL and COMMAND_LOGGING_CHANNEL are missing. Logging will be disabled.');
+        console.warn('⚠️  Oi, if you\'re setting logging to true, make sure to pass both LOGGING_CHANNEL and COMMAND_LOGGING_CHANNEL along with it, mate! Logging will be disabled!');
         config.ENABLE_LOGGING = false;
     }
     
