@@ -3,18 +3,31 @@ import { IntentsBitField } from 'discord.js';
 import { Client } from 'discordx';
 import 'dotenv/config';
 import { ClusterClient, getInfo } from 'discord-hybrid-sharding';
+import { config, isDev } from './config/Config.js';
 import { handleError } from './utils/Util.ts';
 
-interface CustomClient extends Client {
+/**
+ * Extends the Discord.js Client to include cluster functionality
+ * This allows each shard to communicate with the cluster manager
+ */
+interface WilburClient extends Client {
     cluster: ClusterClient<Client>;
 }
 
 /**
- * The Discord.js client instance.
+ * The Discord.js client instance with conditional sharding support.
+ *
+ * Development Mode:
+ * - Single process, no sharding
+ * - Direct client without cluster functionality
+ *
+ * Production Mode:
+ * - Sharding Configuration:
+ * - shards: Uses getInfo().SHARD_LIST to get the list of shards this instance should handle
+ * - shardCount: Uses getInfo().TOTAL_SHARDS to know the total number of shards
+ * - Each instance of the bot (cluster) will handle a subset of the total shards
  */
-export const client = new Client({
-    shards: getInfo().SHARD_LIST,
-    shardCount: getInfo().TOTAL_SHARDS,
+const clientConfig = {
     intents: [
         IntentsBitField.Flags.Guilds,
         IntentsBitField.Flags.GuildMessages,
@@ -22,7 +35,15 @@ export const client = new Client({
     ],
     silent: true,
     botGuilds: process.env.GUILDS ? process.env.GUILDS.split(',') : undefined,
-}) as CustomClient;
+    ...(isDev
+        ? {}
+        : {
+              shards: getInfo().SHARD_LIST,
+              shardCount: getInfo().TOTAL_SHARDS,
+          }),
+};
+
+export const client = new Client(clientConfig) as WilburClient;
 
 /**
  * Handles unhandled rejections by logging the error and sending an embed to a designated logging channel, if enabled.
@@ -61,8 +82,6 @@ client.on('error', async (error: unknown) => {
 async function run() {
     const missingVar = (v: string) => `Oi mate, the ${v} environment variable is missing!`;
     const invalidBool = (v: string) => `Either set the '${v}' value to true or false, mate.`;
-    const invalidLoggingChannels =
-        "Oi, if you're setting logging to true, make sure to pass both LOGGING_CHANNEL and COMMAND_LOGGING_CHANNEL along with it, mate!";
     const invalidValhallaConfig =
         'Blimey, you need both VALHALLA_API_URI and VALHALLA_API_KEY for the Valhalla integration to work!';
 
@@ -84,14 +103,6 @@ async function run() {
         if (process.env[v] !== 'true' && process.env[v] !== 'false') {
             throw new Error(invalidBool(v));
         }
-    }
-
-    // Special validation for logging channels when logging is enabled
-    if (
-        process.env.ENABLE_LOGGING === 'true' &&
-        (!process.env.LOGGING_CHANNEL || !process.env.COMMAND_LOGGING_CHANNEL)
-    ) {
-        throw new Error(invalidLoggingChannels);
     }
 
     // Special validation for Valhalla API (since both URI and key are needed together)
@@ -138,9 +149,11 @@ async function run() {
     const loadSequentially = async () => {
         await importx(`${dirname(import.meta.url)}/{events,commands,context}/**/*.{ts,js}`);
         await sleep(time);
-        client.cluster = new ClusterClient(client);
-        await sleep(time);
-        await client.login(process.env.BOT_TOKEN as string);
+        if (!isDev) {
+            client.cluster = new ClusterClient(client);
+            await sleep(time);
+        }
+        await client.login(config.BOT_TOKEN);
     };
     await loadSequentially();
 }
