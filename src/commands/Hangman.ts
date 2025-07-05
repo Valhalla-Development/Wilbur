@@ -76,7 +76,7 @@ export class Hangman {
                 await channel.send(
                     'Oopsie daisy, mate! An unknown error occurred. Could you please try again later?'
                 );
-                return undefined;
+                return;
             }
         }
 
