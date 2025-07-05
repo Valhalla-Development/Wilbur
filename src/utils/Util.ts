@@ -1,11 +1,11 @@
 import {
     ChannelType,
     type ColorResolvable,
+    codeBlock,
     EmbedBuilder,
     type Message,
     PermissionsBitField,
     type TextChannel,
-    codeBlock,
 } from 'discord.js';
 import type { Client } from 'discordx';
 import '@colors/colors';
