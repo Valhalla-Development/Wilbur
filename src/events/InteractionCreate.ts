@@ -1,4 +1,4 @@
-import { ChannelType, EmbedBuilder, codeBlock } from 'discord.js';
+import { ChannelType, codeBlock, EmbedBuilder } from 'discord.js';
 import type { ArgsOf, Client } from 'discordx';
 import { Discord, On } from 'discordx';
 import moment from 'moment';
@@ -15,12 +15,13 @@ export class InteractionCreate {
     async onInteraction([interaction]: ArgsOf<'interactionCreate'>, client: Client) {
         // Check if the interaction is in a guild and in a guild text channel, and is either a string select menu or a chat input command.
         if (
-            !interaction.guild ||
-            !interaction.channel ||
+            !(interaction.guild && interaction.channel) ||
             interaction.channel.type !== ChannelType.GuildText ||
-            (!interaction.isChatInputCommand() &&
-                !interaction.isModalSubmit() &&
-                !interaction.isButton())
+            !(
+                interaction.isChatInputCommand() ||
+                interaction.isModalSubmit() ||
+                interaction.isButton()
+            )
         ) {
             return;
         }
