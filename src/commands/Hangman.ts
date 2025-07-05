@@ -8,6 +8,7 @@ import {
     type ThreadChannel,
 } from 'discord.js';
 import { Discord, Slash } from 'discordx';
+import { config } from '../config/Config.js';
 import { deletableCheck, getRandomWord, messageDelete } from '../utils/Util.ts';
 
 const cooldown = new Map();
@@ -54,16 +55,16 @@ export class Hangman {
         async function updateGameImage(channel: ThreadChannel, messageToUpdate?: Message) {
             let response: AxiosResponse<Buffer>;
             try {
-                response = await axios.get(`${process.env.VALHALLA_API_URI}/hangman`, {
+                response = await axios.get(`${config.VALHALLA_API_URI}/hangman`, {
                     params: {
-                        api_key: `${process.env.VALHALLA_API_KEY}`,
+                        api_key: `${config.VALHALLA_API_KEY}`,
                         word: gameState.word,
                         guessed: gameState.guessed,
                         hangmanState: gameState.hangmanState,
                         showWord: gameState.showWord,
                     },
                     responseType: 'arraybuffer',
-                    headers: { Authorization: `Bearer ${process.env.VALHALLA_API_KEY}` },
+                    headers: { Authorization: `Bearer ${config.VALHALLA_API_KEY}` },
                 });
 
                 const attachment = new AttachmentBuilder(response.data, { name: 'Hangman.jpg' });

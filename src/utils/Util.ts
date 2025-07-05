@@ -11,6 +11,7 @@ import type { Client } from 'discordx';
 import '@colors/colors';
 import axios from 'axios';
 import Snoowrap from 'snoowrap';
+import { config } from '../config/Config.js';
 
 /**
  * Capitalises the first letter of each word in a string.
@@ -84,11 +85,11 @@ export async function fetchAndScrambleWord(): Promise<{
     definition: string[];
     fieldArray: { name: string; value: string }[];
 }> {
-    const url = `${process.env.VALHALLA_API_URI}/wordEnhanced`;
+    const url = `${config.VALHALLA_API_URI}/wordEnhanced`;
 
     try {
         const response = await axios.get(url, {
-            headers: { Authorization: `Bearer ${process.env.VALHALLA_API_KEY}` },
+            headers: { Authorization: `Bearer ${config.VALHALLA_API_KEY}` },
         });
 
         const { data } = response;
@@ -128,11 +129,11 @@ export async function fetchAndScrambleWord(): Promise<{
  * console.log(randomWord);
  */
 export async function getRandomWord(): Promise<string | null> {
-    const url = `${process.env.VALHALLA_API_URI}/word`;
+    const url = `${config.VALHALLA_API_URI}/word`;
 
     try {
         const response = await axios.get(url, {
-            headers: { Authorization: `Bearer ${process.env.VALHALLA_API_KEY}` },
+            headers: { Authorization: `Bearer ${config.VALHALLA_API_KEY}` },
         });
 
         if (response.status === 200) {
@@ -227,7 +228,9 @@ export async function postToReddit(client: Client, cnt: string, author: string, 
         ];
 
         // Filtering out the missing environment variables
-        const missingVars = requiredVars.filter((varName) => !process.env[varName]);
+        const missingVars = requiredVars.filter(
+            (varName) => !config[varName as keyof typeof config]
+        );
 
         // If any required variables are missing, throw an error
         if (missingVars.length > 0) {
@@ -244,24 +247,24 @@ export async function postToReddit(client: Client, cnt: string, author: string, 
 
     const reddit = new Snoowrap({
         userAgent: client.user!.username,
-        clientId: process.env.REDDIT_CLIENT_ID as string,
-        clientSecret: process.env.REDDIT_CLIENT_SECRET as string,
-        username: process.env.REDDIT_USERNAME as string,
-        password: process.env.REDDIT_PASSWORD as string,
+        clientId: config.REDDIT_CLIENT_ID as string,
+        clientSecret: config.REDDIT_CLIENT_SECRET as string,
+        username: config.REDDIT_USERNAME as string,
+        password: config.REDDIT_PASSWORD as string,
     });
 
     // If an image is provided, post it as a link post
     if (imageUrl) {
         await reddit
-            .getSubreddit(process.env.REDDIT_SUBREDDIT_NAME as string)
+            .getSubreddit(config.REDDIT_SUBREDDIT_NAME as string)
             .submitLink({
-                subredditName: process.env.REDDIT_SUBREDDIT_NAME as string,
+                subredditName: config.REDDIT_SUBREDDIT_NAME as string,
                 title: `📣 | ${processedContent.length > 50 ? `${processedContent.substring(0, 47)}...` : processedContent}`,
                 url: imageUrl,
             })
             .then((post) => {
-                if (process.env.REDDIT_FLAIR) {
-                    post.assignFlair({ text: process.env.REDDIT_FLAIR, cssClass: '' });
+                if (config.REDDIT_FLAIR) {
+                    post.assignFlair({ text: config.REDDIT_FLAIR, cssClass: '' });
                 }
                 console.log(`Posted image "${imageUrl}" to Reddit.`);
             })
@@ -277,15 +280,15 @@ export async function postToReddit(client: Client, cnt: string, author: string, 
 
     // Fallback to submitting a self (text) post if no imageUrl is provided
     await reddit
-        .getSubreddit(process.env.REDDIT_SUBREDDIT_NAME as string)
+        .getSubreddit(config.REDDIT_SUBREDDIT_NAME as string)
         .submitSelfpost({
-            subredditName: process.env.REDDIT_SUBREDDIT_NAME as string,
+            subredditName: config.REDDIT_SUBREDDIT_NAME as string,
             title: `📣 | ${processedContent.length > 50 ? `${processedContent.substring(0, 47)}...` : processedContent}`,
-            text: `${processedContent}\n\nPosted by ${author} in our Discord Community at ${process.env.DISCORD_SUPPORT}\n\nThis is an automated post.`,
+            text: `${processedContent}\n\nPosted by ${author} in our Discord Community at ${config.DISCORD_SUPPORT}\n\nThis is an automated post.`,
         })
         .then((post) => {
-            if (process.env.REDDIT_FLAIR) {
-                post.assignFlair({ text: process.env.REDDIT_FLAIR, cssClass: '' });
+            if (config.REDDIT_FLAIR) {
+                post.assignFlair({ text: config.REDDIT_FLAIR, cssClass: '' });
             }
 
             console.log(`Posted message "${processedContent}" to Reddit.`);
@@ -323,7 +326,7 @@ export async function handleError(client: Client, error: unknown): Promise<void>
     // Ensure we have a stack trace
     const errorStack = normalizedError.stack || normalizedError.message || String(error);
 
-    if (process.env.ENABLE_LOGGING?.toLowerCase() !== 'true' || !process.env.LOGGING_CHANNEL) {
+    if (!(config.ENABLE_LOGGING && config.LOGGING_CHANNEL)) {
         return;
     }
 
@@ -343,12 +346,12 @@ export async function handleError(client: Client, error: unknown): Promise<void>
     }
 
     try {
-        const channel = client.channels.cache.get(process.env.LOGGING_CHANNEL) as
+        const channel = client.channels.cache.get(config.LOGGING_CHANNEL) as
             | TextChannel
             | undefined;
 
         if (!channel || channel.type !== ChannelType.GuildText) {
-            console.error(`Invalid logging channel: ${process.env.LOGGING_CHANNEL}`);
+            console.error(`Invalid logging channel: ${config.LOGGING_CHANNEL}`);
             return;
         }
 

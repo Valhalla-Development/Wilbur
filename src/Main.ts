@@ -79,7 +79,6 @@ client.on('error', async (error: unknown) => {
  * @returns A Promise that resolves with void when the bot is started.
  */
 async function run() {
-
     /**
      * Delays the execution of the function for a specified time in milliseconds.
      * @param ms - The time in milliseconds to delay the execution of the function.

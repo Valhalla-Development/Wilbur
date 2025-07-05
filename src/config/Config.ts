@@ -1,4 +1,3 @@
-
 import { z } from 'zod';
 
 // Helper transforms for common patterns
@@ -34,8 +33,12 @@ const configSchema = z.object({
     COMMAND_LOGGING_CHANNEL: z.string().optional(),
 
     // Valhalla API settings
-    VALHALLA_API_URI: z.string().min(1, 'Oi mate, the VALHALLA_API_URI environment variable is missing!'),
-    VALHALLA_API_KEY: z.string().min(1, 'Oi mate, the VALHALLA_API_KEY environment variable is missing!'),
+    VALHALLA_API_URI: z
+        .string()
+        .min(1, 'Oi mate, the VALHALLA_API_URI environment variable is missing!'),
+    VALHALLA_API_KEY: z
+        .string()
+        .min(1, 'Oi mate, the VALHALLA_API_KEY environment variable is missing!'),
 
     // Trello integration settings
     TRELLO_API_KEY: z.string().optional(),
@@ -61,10 +64,12 @@ const configSchema = z.object({
 let config: z.infer<typeof configSchema>;
 try {
     config = configSchema.parse(process.env);
-    
+
     // Validate logging channels required when logging is enabled
     if (config.ENABLE_LOGGING && !config.LOGGING_CHANNEL && !config.COMMAND_LOGGING_CHANNEL) {
-        console.warn('⚠️  Oi, if you\'re setting logging to true, make sure to pass both LOGGING_CHANNEL and COMMAND_LOGGING_CHANNEL along with it, mate! Logging will be disabled!');
+        console.warn(
+            "⚠️  Oi, if you're setting logging to true, make sure to pass both LOGGING_CHANNEL and COMMAND_LOGGING_CHANNEL along with it, mate! Logging will be disabled!"
+        );
         config.ENABLE_LOGGING = false;
     }
 
@@ -86,14 +91,13 @@ try {
             }
         }
     }
-    
 } catch (error) {
     if (error instanceof z.ZodError) {
         const missingVars = error.issues
-            .filter(issue => issue.code === 'too_small' || issue.code === 'invalid_type')
-            .map(issue => issue.path[0])
+            .filter((issue) => issue.code === 'too_small' || issue.code === 'invalid_type')
+            .map((issue) => issue.path[0])
             .join(', ');
-        
+
         throw new Error(`Missing required environment variables: ${missingVars}`);
     }
     throw error;

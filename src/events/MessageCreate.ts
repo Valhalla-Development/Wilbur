@@ -1,5 +1,6 @@
 import type { ArgsOf, Client } from 'discordx';
 import { Discord, On } from 'discordx';
+import { config } from '../config/Config.js';
 import { postToReddit } from '../utils/Util.ts';
 
 @Discord()
@@ -18,9 +19,9 @@ export class MessageCreate {
 
         // Check if the message is in the specified channel and if Reddit posting is enabled
         if (
-            process.env.REDDIT_POST === 'true' &&
-            process.env.DISCORD_CHANNEL_ID &&
-            process.env.DISCORD_CHANNEL_ID === message.channel.id
+            config.REDDIT_POST &&
+            config.DISCORD_CHANNEL_ID &&
+            config.DISCORD_CHANNEL_ID === message.channel.id
         ) {
             let imageUrl: string | undefined;
 
