@@ -13,7 +13,7 @@ import {
 } from 'discord.js';
 import { ButtonComponent, Discord, ModalComponent, Slash } from 'discordx';
 import { v4 as uuidv4 } from 'uuid';
-import { capitalise, color, fetchAndScrambleWord } from '../utils/Util.ts';
+import { capitalise, color, fetchAndScrambleWord } from '../../utils/Util.ts';
 
 class Game {
     gameIsActive: boolean;

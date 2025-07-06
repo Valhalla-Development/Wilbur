@@ -14,7 +14,7 @@ import {
 } from 'discord.js';
 import type { Client, DApplicationCommand } from 'discordx';
 import { ButtonComponent, Discord, MetadataStorage, ModalComponent, Slash } from 'discordx';
-import { capitalise, getCommandIds } from '../utils/Util.ts';
+import { capitalise, getCommandIds } from '../../utils/Util.ts';
 
 @Discord()
 export class Help {

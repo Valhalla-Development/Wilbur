@@ -8,8 +8,8 @@ import {
     type ThreadChannel,
 } from 'discord.js';
 import { Discord, Slash } from 'discordx';
-import { config } from '../config/Config.js';
-import { deletableCheck, getRandomWord, messageDelete } from '../utils/Util.ts';
+import { config } from '../../config/Config.js';
+import { deletableCheck, getRandomWord, messageDelete } from '../../utils/Util.ts';
 
 const cooldown = new Map();
 const cooldownSeconds = 1;
