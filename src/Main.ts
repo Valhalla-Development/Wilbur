@@ -77,6 +77,7 @@ client.on('error', async (error: unknown) => {
  * Runs the bot by loading the required components and logging in the client.
  * @async
  * @returns A Promise that resolves with void when the bot is started.
+ * @throws An Error if any required environment variables are missing or invalid.
  */
 async function run() {
     /**
@@ -95,13 +96,17 @@ async function run() {
      * @returns A Promise that resolves with void when everything is loaded sequentially.
      */
     const loadSequentially = async () => {
-        await importx(`${dirname(import.meta.url)}/{events,commands,context}/**/*.{ts,js}`);
-        await sleep(time);
-        if (!isDev) {
-            client.cluster = new ClusterClient(client);
+        try {
+            await importx(`${dirname(import.meta.url)}/{events,commands}/**/*.{ts,js}`);
             await sleep(time);
+            if (!isDev) {
+                client.cluster = new ClusterClient(client);
+                await sleep(time);
+            }
+            await client.login(config.BOT_TOKEN);
+        } catch (error) {
+            console.error('An error occurred while initializing the bot:', error);
         }
-        await client.login(config.BOT_TOKEN);
     };
     await loadSequentially();
 }
