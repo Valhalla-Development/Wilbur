@@ -16,6 +16,7 @@ import {
 import type { Client, DApplicationCommand } from 'discordx';
 import { ButtonComponent, Discord, MetadataStorage, ModalComponent, Slash } from 'discordx';
 import { capitalise, getCommandIds } from '../../utils/Util.ts';
+import { config } from '../../config/Config.js';
 
 @Discord()
 @Category('Miscellaneous')
@@ -156,21 +157,21 @@ export class Help {
 
         const options = {
             Suggestion: {
-                idList: process.env.TRELLO_SUGGESTION_LIST,
-                idCardSource: process.env.TRELLO_SUGGESTION_TEMPLATE,
+                idList: config.TRELLO_SUGGESTION_LIST,
+                idCardSource: config.TRELLO_SUGGESTION_TEMPLATE,
                 desc: `**Suggested By: ${interaction.user.username}**\n**Feature: ${modalDescription}**${modalImage ? `\n\n**Screenshots: ${modalImage}**` : ''}`,
             },
             Issue: {
-                idList: process.env.TRELLO_ISSUE_LIST,
-                idCardSource: process.env.TRELLO_ISSUE_TEMPLATE,
+                idList: config.TRELLO_ISSUE_LIST,
+                idCardSource: config.TRELLO_ISSUE_TEMPLATE,
                 desc: `**Reporter: ${interaction.user.username}**\n**Description: ${modalDescription}**${modalImage ? `\n\n**Screenshots: ${modalImage}**` : ''}`,
             },
         };
 
         await axios
             .post('https://api.trello.com/1/cards', {
-                key: process.env.TRELLO_API_KEY,
-                token: process.env.TRELLO_TOKEN,
+                key: config.TRELLO_API_KEY,
+                token: config.TRELLO_TOKEN,
                 idList: options[reportType as 'Suggestion' | 'Issue'].idList,
                 idCardSource: options[reportType as 'Suggestion' | 'Issue'].idCardSource,
                 keepFromSource:
@@ -184,8 +185,8 @@ export class Help {
                     ephemeral: true,
                 });
 
-                if (process.env.TRELLO_CHANNEL) {
-                    const channel = client.channels.cache.get(process.env.TRELLO_CHANNEL);
+                if (config.TRELLO_CHANNEL) {
+                    const channel = client.channels.cache.get(config.TRELLO_CHANNEL);
                     if (channel && channel.type === ChannelType.GuildText) {
                         channel.send({
                             content: `New ${reportType}, from ${interaction.user.username}: ${res.data.url}`,
