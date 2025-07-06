@@ -197,14 +197,20 @@ export class Scramble {
         const game = activeGames[gameId]; // Get the game state using the gameId
 
         if (!game) {
-            await interaction.reply({ content: 'This game no longer exists.', flags: [MessageFlags.Ephemeral] });
+            await interaction.reply({
+                content: 'This game no longer exists.',
+                flags: [MessageFlags.Ephemeral],
+            });
             return;
         }
 
         const [modalField] = ['modalField'].map((id) => interaction.fields.getTextInputValue(id));
 
         if (!modalField) {
-            await interaction.reply({ content: 'No answer provided.', flags: [MessageFlags.Ephemeral] });
+            await interaction.reply({
+                content: 'No answer provided.',
+                flags: [MessageFlags.Ephemeral],
+            });
             return;
         }
 

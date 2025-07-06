@@ -190,7 +190,10 @@ export async function messageDelete(message: Message, time: number): Promise<voi
  * @param client - The Discord client instance
  * @returns Promise resolving to a record of command names to their IDs
  */
-export async function getCommandIds(client: Client): Promise<Record<string, string>> {
+export async function getCommandIds(
+    client: Client,
+    guildId: string
+): Promise<Record<string, string>> {
     if (!client.application) {
         throw new Error('Client application is not available');
     }
@@ -211,7 +214,8 @@ export async function getCommandIds(client: Client): Promise<Record<string, stri
     }
 
     // Fetch guild commands
-    const guildPromises = Array.from(client.guilds.cache.values()).map(async (guild) => {
+    const guild = client.guilds.cache.get(guildId);
+    if (guild) {
         try {
             const guildCommands = await guild.commands.fetch();
             for (const cmd of guildCommands.values()) {
@@ -220,9 +224,7 @@ export async function getCommandIds(client: Client): Promise<Record<string, stri
         } catch (error) {
             console.warn(`Could not fetch commands for guild ${guild.name}:`, error);
         }
-    });
-
-    await Promise.allSettled(guildPromises);
+    }
 
     return Object.fromEntries(commandIds);
 }
