@@ -1,3 +1,4 @@
+import { Category } from '@discordx/utilities';
 import axios from 'axios';
 import {
     ActionRowBuilder,
@@ -17,6 +18,7 @@ import { ButtonComponent, Discord, MetadataStorage, ModalComponent, Slash } from
 import { capitalise, getCommandIds } from '../../utils/Util.ts';
 
 @Discord()
+@Category('Miscellaneous')
 export class Help {
     /**
      * Slash command to display list of commands.

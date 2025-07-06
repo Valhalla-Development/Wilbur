@@ -1,3 +1,4 @@
+import { Category } from '@discordx/utilities';
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -36,6 +37,7 @@ class Game {
 const activeGames: Record<string, Game> = {};
 
 @Discord()
+@Category('Miscellaneous')
 export class Scramble {
     /**
      * Creates an EmbedBuilder object for displaying the scrambled word to users.

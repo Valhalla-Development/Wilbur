@@ -1,3 +1,4 @@
+import { Category } from '@discordx/utilities';
 import axios, { type AxiosResponse } from 'axios';
 import {
     AttachmentBuilder,
@@ -15,6 +16,7 @@ const cooldown = new Map();
 const cooldownSeconds = 1;
 
 @Discord()
+@Category('Miscellaneous')
 export class Hangman {
     @Slash({ description: 'Test your word-guessing skills in a thrilling game of Hangman' })
     async hangman(interaction: CommandInteraction) {
