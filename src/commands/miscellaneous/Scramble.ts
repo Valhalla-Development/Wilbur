@@ -7,6 +7,7 @@ import {
     ChannelType,
     type CommandInteraction,
     EmbedBuilder,
+    MessageFlags,
     ModalBuilder,
     type ModalSubmitInteraction,
     TextInputBuilder,
@@ -76,7 +77,7 @@ export class Scramble {
         if (!interaction.channel || interaction.channel.type !== ChannelType.GuildText) {
             return;
         }
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
 
         const game = new Game();
         const gameId = uuidv4(); // Generate a unique id for the game
@@ -196,14 +197,14 @@ export class Scramble {
         const game = activeGames[gameId]; // Get the game state using the gameId
 
         if (!game) {
-            await interaction.reply({ content: 'This game no longer exists.', ephemeral: true });
+            await interaction.reply({ content: 'This game no longer exists.', flags: [MessageFlags.Ephemeral] });
             return;
         }
 
         const [modalField] = ['modalField'].map((id) => interaction.fields.getTextInputValue(id));
 
         if (!modalField) {
-            await interaction.reply({ content: 'No answer provided.', ephemeral: true });
+            await interaction.reply({ content: 'No answer provided.', flags: [MessageFlags.Ephemeral] });
             return;
         }
 
@@ -266,7 +267,7 @@ export class Scramble {
         } else {
             await interaction.reply({
                 content: 'This game has already ended. Better luck next time!',
-                ephemeral: true,
+                flags: [MessageFlags.Ephemeral],
             });
         }
     }

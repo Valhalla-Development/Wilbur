@@ -241,9 +241,8 @@ async function handleSelectMenu(
 
         const errorContainer = new ContainerBuilder().addTextDisplayComponents(errorText);
         await interaction.reply({
-            ephemeral: true,
             components: [errorContainer],
-            flags: MessageFlags.IsComponentsV2,
+            flags: [MessageFlags.IsComponentsV2, MessageFlags.Ephemeral],
         });
         return;
     }
@@ -399,7 +398,7 @@ export class Help {
             .then((res) => {
                 interaction.reply({
                     content: `Your \`${reportType}\` has been logged successfully on the [Trello board!](${res.data.url}), appreciate the feedback, mate! `,
-                    ephemeral: true,
+                    flags: [MessageFlags.Ephemeral],
                 });
 
                 if (config.TRELLO_CHANNEL) {
