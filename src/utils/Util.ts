@@ -247,8 +247,9 @@ export async function postToReddit(client: Client, cnt: string, author: string, 
             'REDDIT_SUBREDDIT_NAME',
             'REDDIT_CLIENT_ID',
             'REDDIT_CLIENT_SECRET',
-            'REDDIT_USERNAME',
-            'REDDIT_PASSWORD',
+            'REDDIT_REDIRECT_URI',
+            'REDDIT_OAUTH_ACCESS_TOKEN',
+            'REDDIT_OAUTH_REFRESH_TOKEN',
         ];
 
         // Filtering out the missing environment variables
@@ -269,57 +270,57 @@ export async function postToReddit(client: Client, cnt: string, author: string, 
         return;
     }
 
-    const reddit = new Snoowrap({
-        userAgent: client.user!.username,
-        clientId: config.REDDIT_CLIENT_ID as string,
-        clientSecret: config.REDDIT_CLIENT_SECRET as string,
-        username: config.REDDIT_USERNAME as string,
-        password: config.REDDIT_PASSWORD as string,
-    });
+    // Import the Reddit OAuth manager
+    const { redditOAuth } = await import('./RedditOAuth.js');
 
-    // If an image is provided, post it as a link post
-    if (imageUrl) {
-        await reddit
-            .getSubreddit(config.REDDIT_SUBREDDIT_NAME as string)
-            .submitLink({
-                subredditName: config.REDDIT_SUBREDDIT_NAME as string,
-                title: `📣 | ${processedContent.length > 50 ? `${processedContent.substring(0, 47)}...` : processedContent}`,
-                url: imageUrl,
-            })
-            .then((post) => {
-                if (config.REDDIT_FLAIR) {
-                    post.assignFlair({ text: config.REDDIT_FLAIR, cssClass: '' });
-                }
-                console.log(`Posted image "${imageUrl}" to Reddit.`);
-            })
-            .catch((e) => {
-                console.error(
-                    'Error posting image to Reddit:',
-                    e.message,
-                    e.response ? e.response.body : e
-                );
-            });
-        return;
-    }
+    try {
+        const title = `📣 | ${processedContent.length > 50 ? `${processedContent.substring(0, 47)}...` : processedContent}`;
+        
+        // If an image is provided, post it as a link post
+        if (imageUrl) {
+            const result = await redditOAuth.submitPost(
+                config.REDDIT_SUBREDDIT_NAME as string,
+                title,
+                undefined, // No text for link posts
+                imageUrl,
+                config.REDDIT_FLAIR
+            );
 
-    // Fallback to submitting a self (text) post if no imageUrl is provided
-    await reddit
-        .getSubreddit(config.REDDIT_SUBREDDIT_NAME as string)
-        .submitSelfpost({
-            subredditName: config.REDDIT_SUBREDDIT_NAME as string,
-            title: `📣 | ${processedContent.length > 50 ? `${processedContent.substring(0, 47)}...` : processedContent}`,
-            text: `${processedContent}\n\nPosted by ${author} in our Discord Community at ${config.DISCORD_SUPPORT}\n\nThis is an automated post.`,
-        })
-        .then((post) => {
-            if (config.REDDIT_FLAIR) {
-                post.assignFlair({ text: config.REDDIT_FLAIR, cssClass: '' });
+            if (result.json?.errors?.length > 0) {
+                console.error('Reddit API errors:', result.json.errors);
+                return;
             }
 
-            console.log(`Posted message "${processedContent}" to Reddit.`);
-        })
-        .catch((e) => {
-            console.error('Error posting to Reddit:', e.message, e.response ? e.response.body : e);
-        });
+            console.log(`Posted image "${imageUrl}" to Reddit.`);
+            return;
+        }
+
+        // Submit a self (text) post
+        const postText = `${processedContent}\n\nPosted by ${author} in our Discord Community at ${config.DISCORD_SUPPORT}\n\nThis is an automated post.`;
+        
+        const result = await redditOAuth.submitPost(
+            config.REDDIT_SUBREDDIT_NAME as string,
+            title,
+            postText,
+            undefined, // No URL for text posts
+            config.REDDIT_FLAIR
+        );
+
+        if (result.json?.errors?.length > 0) {
+            console.error('Reddit API errors:', result.json.errors);
+            return;
+        }
+
+        console.log(`Posted message "${processedContent}" to Reddit.`);
+    } catch (error) {
+        console.error('Error posting to Reddit with OAuth:', error);
+        
+        // If it's a token-related error, provide helpful guidance
+        if (error instanceof Error && error.message.includes('access token')) {
+            console.error('Please ensure your Reddit OAuth tokens are valid and not expired.');
+            console.error('You may need to re-authenticate using the OAuth flow.');
+        }
+    }
 }
 
 /**

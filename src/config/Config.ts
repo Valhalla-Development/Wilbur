@@ -49,15 +49,27 @@ const configSchema = z.object({
     TRELLO_ISSUE_TEMPLATE: z.string().optional(),
     TRELLO_CHANNEL: z.string().optional(),
 
-    // Reddit integration settings
+    // Reddit integration settings with OAuth
     REDDIT_POST: z.string().optional().default('false').transform(stringToBoolean),
     DISCORD_CHANNEL_ID: z.string().optional(),
     REDDIT_SUBREDDIT_NAME: z.string().optional(),
     REDDIT_FLAIR: z.string().optional(),
     REDDIT_CLIENT_ID: z.string().optional(),
     REDDIT_CLIENT_SECRET: z.string().optional(),
-    REDDIT_USERNAME: z.string().optional(),
-    REDDIT_PASSWORD: z.string().optional(),
+    
+    // OAuth settings
+    REDDIT_REDIRECT_URI: z.string().optional(),
+    REDDIT_OAUTH_ACCESS_TOKEN: z.string().optional(),
+    REDDIT_OAUTH_REFRESH_TOKEN: z.string().optional(),
+    
+    // Discord OAuth settings for Reddit integration
+    DISCORD_OAUTH_CLIENT_ID: z.string().optional(),
+    DISCORD_OAUTH_CLIENT_SECRET: z.string().optional(),
+    DISCORD_OAUTH_REDIRECT_URI: z.string().optional(),
+    
+    // OAuth server settings
+    OAUTH_SERVER_PORT: z.string().optional().default('3000'),
+    OAUTH_SERVER_HOST: z.string().optional().default('localhost'),
 });
 
 // Parse config with error handling
@@ -80,8 +92,12 @@ try {
             'REDDIT_SUBREDDIT_NAME',
             'REDDIT_CLIENT_ID',
             'REDDIT_CLIENT_SECRET',
-            'REDDIT_USERNAME',
-            'REDDIT_PASSWORD',
+            'REDDIT_REDIRECT_URI',
+            'REDDIT_OAUTH_ACCESS_TOKEN',
+            'REDDIT_OAUTH_REFRESH_TOKEN',
+            'DISCORD_OAUTH_CLIENT_ID',
+            'DISCORD_OAUTH_CLIENT_SECRET',
+            'DISCORD_OAUTH_REDIRECT_URI',
         ];
 
         for (const varName of requiredRedditVars) {
