@@ -247,9 +247,14 @@ export async function postToReddit(client: Client, cnt: string, author: string, 
             'REDDIT_SUBREDDIT_NAME',
             'REDDIT_CLIENT_ID',
             'REDDIT_CLIENT_SECRET',
-            'REDDIT_USERNAME',
-            'REDDIT_PASSWORD',
         ];
+
+        // Add auth vars based on 2FA setting
+        if (config.REDDIT_2FA) {
+            requiredVars.push('REDDIT_REFRESH_TOKEN');
+        } else {
+            requiredVars.push('REDDIT_USERNAME', 'REDDIT_PASSWORD');
+        }
 
         // Filtering out the missing environment variables
         const missingVars = requiredVars.filter(
@@ -269,13 +274,20 @@ export async function postToReddit(client: Client, cnt: string, author: string, 
         return;
     }
 
-    const reddit = new Snoowrap({
-        userAgent: client.user!.username,
-        clientId: config.REDDIT_CLIENT_ID as string,
-        clientSecret: config.REDDIT_CLIENT_SECRET as string,
-        username: config.REDDIT_USERNAME as string,
-        password: config.REDDIT_PASSWORD as string,
-    });
+    const reddit = config.REDDIT_2FA
+        ? new Snoowrap({
+              userAgent: client.user!.username,
+              clientId: config.REDDIT_CLIENT_ID as string,
+              clientSecret: config.REDDIT_CLIENT_SECRET as string,
+              refreshToken: config.REDDIT_REFRESH_TOKEN as string,
+          })
+        : new Snoowrap({
+              userAgent: client.user!.username,
+              clientId: config.REDDIT_CLIENT_ID as string,
+              clientSecret: config.REDDIT_CLIENT_SECRET as string,
+              username: config.REDDIT_USERNAME as string,
+              password: config.REDDIT_PASSWORD as string,
+          });
 
     // If an image is provided, post it as a link post
     if (imageUrl) {

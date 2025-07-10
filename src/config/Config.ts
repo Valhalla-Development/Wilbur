@@ -56,8 +56,10 @@ const configSchema = z.object({
     REDDIT_FLAIR: z.string().optional(),
     REDDIT_CLIENT_ID: z.string().optional(),
     REDDIT_CLIENT_SECRET: z.string().optional(),
+    REDDIT_2FA: z.string().optional().default('false').transform(stringToBoolean),
     REDDIT_USERNAME: z.string().optional(),
     REDDIT_PASSWORD: z.string().optional(),
+    REDDIT_REFRESH_TOKEN: z.string().optional(),
 });
 
 // Parse config with error handling
@@ -80,14 +82,30 @@ try {
             'REDDIT_SUBREDDIT_NAME',
             'REDDIT_CLIENT_ID',
             'REDDIT_CLIENT_SECRET',
-            'REDDIT_USERNAME',
-            'REDDIT_PASSWORD',
         ];
 
         for (const varName of requiredRedditVars) {
             const value = config[varName as keyof typeof config];
             if (!value) {
                 throw new Error(`Oi mate, when REDDIT_POST is true, ${varName} is required!`);
+            }
+        }
+
+        // Check authentication method based on 2FA setting
+        if (config.REDDIT_2FA) {
+            // 2FA enabled - require refresh token
+            if (!config.REDDIT_REFRESH_TOKEN) {
+                throw new Error(
+                    'Oi mate, when REDDIT_2FA is true, REDDIT_REFRESH_TOKEN is required!'
+                );
+            }
+        } else {
+            // 2FA disabled - require username and password
+            if (!config.REDDIT_USERNAME) {
+                throw new Error('Oi mate, when REDDIT_2FA is false, REDDIT_USERNAME is required!');
+            }
+            if (!config.REDDIT_PASSWORD) {
+                throw new Error('Oi mate, when REDDIT_2FA is false, REDDIT_PASSWORD is required!');
             }
         }
     }
