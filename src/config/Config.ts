@@ -53,7 +53,7 @@ const configSchema = z.object({
     REDDIT_POST: z.string().optional().default('false').transform(stringToBoolean),
     DISCORD_CHANNEL_ID: z.string().optional(),
     REDDIT_SUBREDDIT_NAME: z.string().optional(),
-    REDDIT_FLAIR: z.string().optional(),
+    REDDIT_FLAIR_TEMPLATE_ID: z.string().optional(),
     REDDIT_CLIENT_ID: z.string().optional(),
     REDDIT_CLIENT_SECRET: z.string().optional(),
     REDDIT_2FA: z.string().optional().default('false').transform(stringToBoolean),

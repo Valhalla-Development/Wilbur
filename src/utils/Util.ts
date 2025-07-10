@@ -299,8 +299,8 @@ export async function postToReddit(client: Client, cnt: string, author: string, 
                 url: imageUrl,
             })
             .then((post) => {
-                if (config.REDDIT_FLAIR) {
-                    post.assignFlair({ text: config.REDDIT_FLAIR, cssClass: '' });
+                if (config.REDDIT_FLAIR_TEMPLATE_ID) {
+                    post.selectFlair({ flair_template_id: config.REDDIT_FLAIR_TEMPLATE_ID });
                 }
                 console.log(`Posted image "${imageUrl}" to Reddit.`);
             })
@@ -323,8 +323,8 @@ export async function postToReddit(client: Client, cnt: string, author: string, 
             text: `${processedContent}\n\nPosted by ${author} in our Discord Community at ${config.DISCORD_SUPPORT}\n\nThis is an automated post.`,
         })
         .then((post) => {
-            if (config.REDDIT_FLAIR) {
-                post.assignFlair({ text: config.REDDIT_FLAIR, cssClass: '' });
+            if (config.REDDIT_FLAIR_TEMPLATE_ID) {
+                post.selectFlair({ flair_template_id: config.REDDIT_FLAIR_TEMPLATE_ID });
             }
 
             console.log(`Posted message "${processedContent}" to Reddit.`);
