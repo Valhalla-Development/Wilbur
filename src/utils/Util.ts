@@ -10,7 +10,6 @@ import {
 import type { Client } from 'discordx';
 import '@colors/colors';
 import axios from 'axios';
-import Snoowrap from 'snoowrap';
 import { config } from '../config/Config.js';
 
 /**
@@ -274,64 +273,124 @@ export async function postToReddit(client: Client, cnt: string, author: string, 
         return;
     }
 
-    const reddit = config.REDDIT_2FA
-        ? new Snoowrap({
-              userAgent: client.user!.username,
-              clientId: config.REDDIT_CLIENT_ID as string,
-              clientSecret: config.REDDIT_CLIENT_SECRET as string,
-              refreshToken: config.REDDIT_REFRESH_TOKEN as string,
-          })
-        : new Snoowrap({
-              userAgent: client.user!.username,
-              clientId: config.REDDIT_CLIENT_ID as string,
-              clientSecret: config.REDDIT_CLIENT_SECRET as string,
-              username: config.REDDIT_USERNAME as string,
-              password: config.REDDIT_PASSWORD as string,
-          });
+    // Build User-Agent
+    const botName = client.user?.username || 'DiscordBot';
+    const redditUsername = config.REDDIT_USERNAME || botName;
+    const userAgent = `discord:${botName}:v${process.env.npm_package_version} (by /u/${redditUsername})`;
 
-    // If an image is provided, post it as a link post
-    if (imageUrl) {
-        await reddit
-            .getSubreddit(config.REDDIT_SUBREDDIT_NAME as string)
-            .submitLink({
-                subredditName: config.REDDIT_SUBREDDIT_NAME as string,
-                title: `📣 | ${processedContent.length > 50 ? `${processedContent.substring(0, 47)}...` : processedContent}`,
-                url: imageUrl,
-            })
-            .then((post) => {
-                if (config.REDDIT_FLAIR_TEMPLATE_ID) {
-                    post.selectFlair({ flair_template_id: config.REDDIT_FLAIR_TEMPLATE_ID });
+    try {
+        // Get OAuth access token
+        let accessToken: string;
+
+        if (config.REDDIT_2FA) {
+            // Use refresh token for 2FA accounts
+            const authResponse = await axios.post(
+                'https://www.reddit.com/api/v1/access_token',
+                {
+                    grant_type: 'refresh_token',
+                    refresh_token: config.REDDIT_REFRESH_TOKEN,
+                },
+                {
+                    auth: {
+                        username: config.REDDIT_CLIENT_ID as string,
+                        password: config.REDDIT_CLIENT_SECRET as string,
+                    },
+                    headers: {
+                        'User-Agent': userAgent,
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
                 }
+            );
+            accessToken = authResponse.data.access_token;
+        } else {
+            // Use username/password for regular accounts
+            const authResponse = await axios.post(
+                'https://www.reddit.com/api/v1/access_token',
+                {
+                    grant_type: 'password',
+                    username: config.REDDIT_USERNAME,
+                    password: config.REDDIT_PASSWORD,
+                },
+                {
+                    auth: {
+                        username: config.REDDIT_CLIENT_ID as string,
+                        password: config.REDDIT_CLIENT_SECRET as string,
+                    },
+                    headers: {
+                        'User-Agent': userAgent,
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                }
+            );
+            accessToken = authResponse.data.access_token;
+        }
+
+        // Create post title
+        const title = `📣 | ${processedContent.length > 50 ? `${processedContent.substring(0, 47)}...` : processedContent}`;
+
+        if (imageUrl) {
+            // Submit link post for images
+            const linkPostData = {
+                api_type: 'json',
+                kind: 'link',
+                sr: config.REDDIT_SUBREDDIT_NAME,
+                title,
+                url: imageUrl,
+                flair_id: config.REDDIT_FLAIR_TEMPLATE_ID || undefined,
+            };
+
+            const postResponse = await axios.post(
+                'https://oauth.reddit.com/api/submit',
+                linkPostData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        'User-Agent': userAgent,
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                }
+            );
+
+            if (postResponse.data.json && postResponse.data.json.errors.length === 0) {
                 console.log(`Posted image "${imageUrl}" to Reddit.`);
-            })
-            .catch((e) => {
-                console.error(
-                    'Error posting image to Reddit:',
-                    e.message,
-                    e.response ? e.response.body : e
-                );
-            });
-        return;
-    }
-
-    // Fallback to submitting a self (text) post if no imageUrl is provided
-    await reddit
-        .getSubreddit(config.REDDIT_SUBREDDIT_NAME as string)
-        .submitSelfpost({
-            subredditName: config.REDDIT_SUBREDDIT_NAME as string,
-            title: `📣 | ${processedContent.length > 50 ? `${processedContent.substring(0, 47)}...` : processedContent}`,
-            text: `${processedContent}\n\nPosted by ${author} in our Discord Community at ${config.DISCORD_SUPPORT}\n\nThis is an automated post.`,
-        })
-        .then((post) => {
-            if (config.REDDIT_FLAIR_TEMPLATE_ID) {
-                post.selectFlair({ flair_template_id: config.REDDIT_FLAIR_TEMPLATE_ID });
+            } else {
+                console.error('Error posting image to Reddit:', postResponse.data.json?.errors);
             }
+        } else {
+            // Submit self (text) post
+            const textPostData = {
+                api_type: 'json',
+                kind: 'self',
+                sr: config.REDDIT_SUBREDDIT_NAME,
+                title,
+                text: `${processedContent}\n\nPosted by ${author} in our Discord Community at ${config.DISCORD_SUPPORT}\n\nThis is an automated post.`,
+                flair_id: config.REDDIT_FLAIR_TEMPLATE_ID || undefined,
+            };
 
-            console.log(`Posted message "${processedContent}" to Reddit.`);
-        })
-        .catch((e) => {
-            console.error('Error posting to Reddit:', e.message, e.response ? e.response.body : e);
-        });
+            const postResponse = await axios.post(
+                'https://oauth.reddit.com/api/submit',
+                textPostData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        'User-Agent': userAgent,
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                }
+            );
+
+            if (postResponse.data.json && postResponse.data.json.errors.length === 0) {
+                console.log(`Posted message "${processedContent}" to Reddit.`);
+            } else {
+                console.error('Error posting to Reddit:', postResponse.data.json?.errors);
+            }
+        }
+    } catch (error) {
+        console.error(
+            'Error posting to Reddit:',
+            (error as { response?: { data: unknown } }).response?.data || (error as Error).message
+        );
+    }
 }
 
 /**
